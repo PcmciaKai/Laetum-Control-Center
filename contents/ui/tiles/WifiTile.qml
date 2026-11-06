@@ -8,8 +8,8 @@ Tile {
     readonly property bool airplane: PlasmaNM.Configuration.airplaneModeEnabled
 
     available: devices.wirelessDeviceAvailable
-    enabled: enabledConnections.wirelessHwEnabled && !airplane
-    checked: enabledConnections.wirelessEnabled && enabled
+    toggleEnabled: enabledConnections.wirelessHwEnabled && !airplane
+    checked: enabledConnections.wirelessEnabled && toggleEnabled
     iconName: checked ? "network-wireless-symbolic" : "network-wireless-disconnected-symbolic"
     label: i18n("Wi-Fi")
     status: {

@@ -8,7 +8,7 @@ Tile {
     checked: inhibition.isManuallyInhibited
     iconName: checked ? "system-suspend-inhibited" : "system-suspend-uninhibited"
     label: i18n("Keep awake")
-    status: checked ? i18n("Sleep and lock blocked") : i18n("Off")
+    status: checked ? i18n("Sleep blocked") : i18n("Off")
 
     // The same manual inhibition the Power and Battery applet offers
     onActivated: {

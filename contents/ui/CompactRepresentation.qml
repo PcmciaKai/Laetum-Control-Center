@@ -13,7 +13,8 @@ MouseArea {
     readonly property bool vertical: Plasmoid.formFactor === PlasmaCore.Types.Vertical
     readonly property int iconSize: {
         const thickness = vertical ? width : height;
-        return Kirigami.Units.iconSizes.roundedIconSize(Math.min(thickness, Kirigami.Units.iconSizes.medium));
+        // Same default as the system tray: small-medium icons, smaller only on thin panels
+        return Math.min(Kirigami.Units.iconSizes.smallMedium, Kirigami.Units.iconSizes.roundedIconSize(thickness));
     }
     readonly property bool anyIndicator: network.shown || volume.shown || battery.shown
 

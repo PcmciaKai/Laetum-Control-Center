@@ -16,6 +16,8 @@ Item {
     property bool checked: false
     property bool available: true
     property bool hasDetails: false
+    // When false the tile can't be toggled (e.g. Wi-Fi in airplane mode), but › still works
+    property bool toggleEnabled: true
     property string detailsTooltip: i18n("More options")
 
     signal activated()
@@ -26,7 +28,6 @@ Item {
     readonly property alias detailsButton: more
 
     implicitHeight: Kirigami.Units.gridUnit * 4.8
-    opacity: enabled ? 1 : 0.5
 
     Item {
         id: body
@@ -77,6 +78,8 @@ Item {
             padding: Math.round(Kirigami.Units.largeSpacing * 1.5)
             hoverEnabled: true
             background: null
+            enabled: tile.toggleEnabled
+            opacity: enabled ? 1 : 0.5
 
             Accessible.role: Accessible.Button
             Accessible.name: tile.label

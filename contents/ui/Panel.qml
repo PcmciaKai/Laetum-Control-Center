@@ -205,8 +205,6 @@ FocusScope {
                     rowSpacing: Kirigami.Units.smallSpacing * 2
                     columnSpacing: rowSpacing
 
-                    readonly property real cellWidth: (width - columnSpacing * (columns - 1)) / columns
-
                     Repeater {
                         model: Plasmoid.configuration.tiles
 
@@ -217,7 +215,8 @@ FocusScope {
                             visible: shown
                             source: panel.tileFiles[modelData] ? "tiles/" + panel.tileFiles[modelData] : ""
                             Layout.fillWidth: true
-                            Layout.preferredWidth: grid.cellWidth
+                            // Equal preferred widths + fillWidth = three equal columns
+                            Layout.preferredWidth: Kirigami.Units.gridUnit
                             Layout.preferredHeight: Kirigami.Units.gridUnit * 4.8
                         }
                     }

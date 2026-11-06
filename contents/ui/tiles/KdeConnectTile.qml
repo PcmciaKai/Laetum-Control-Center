@@ -28,7 +28,10 @@ Tile {
     detailsTooltip: i18n("KDE Connect settings")
 
     onActivated: root.runApp("org.kde.kdeconnect.app")
-    onDetailsRequested: root.openKcm("kcm_kdeconnect")
+    onDetailsRequested: {
+        KDEConnect.OpenConfig.openConfiguration();
+        root.expanded = false;
+    }
 
     KDEConnect.DevicesModel {
         id: paired
