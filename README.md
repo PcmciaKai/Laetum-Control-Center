@@ -7,18 +7,24 @@ A quick-settings popup for KDE Plasma 6, designed as a companion to [Laetum Laun
 
 It talks to the same Plasma components as the built-in system tray applets (Networks, Bluetooth, Audio Volume, Brightness and Color, Power and Battery, Notifications, Media Player), so toggling something here is the same as toggling it there.
 
-> **Status: 0.1.0, first version.** This covers the Controls page. Notifications, Calendar, the Wi-Fi network list and an in-popup edit mode are planned (see [Roadmap](#roadmap)).
+> **Status: 0.2.0, early version.** Controls, Notifications and Calendar tabs and the Wi-Fi, Bluetooth and Sound pages are in. An in-popup edit mode is next (see [Roadmap](#roadmap)).
 
 ## Features
 
+- **Three tabs** with Laetum Launcher's sliding accent indicator: **Controls**, **Notifications** (with an unread badge) and **Calendar**
 - **Quick-toggle tiles:** Wi-Fi, Bluetooth, Night Light, Do Not Disturb, Airplane mode, Power profile, Microphone, KDE Connect and Keep awake
-  - Click a tile to toggle it; the › button opens the matching System Settings page
+  - Click a tile to toggle it; the › button opens more options
+  - Wi-Fi, Bluetooth and Microphone (and the volume slider's ›) slide in a page inside the popup: pick and connect to Wi-Fi networks (with an inline password field), connect paired Bluetooth devices or pair a new one, choose the default sound output and input
+  - The other tiles' › opens the matching System Settings page
   - Tiles for hardware you don't have (e.g. Wi-Fi on a desktop) hide themselves
   - Choose which tiles appear and their order in the settings
 - **Volume and brightness sliders**, one brightness slider per display that supports it (laptop panels and DDC/CI monitors)
+- **Notifications tab:** your notification history as cards, with their action buttons, Close, notification settings, Do Not Disturb and Clear all. It uses the same history as Plasma's Notifications applet, so reading or closing a notification here does the same there
+- **Calendar tab:** Plasma's own month view (the one the Digital Clock uses)
 - **Now playing card** for the current MPRIS player, with previous / play-pause / next and a progress bar; click it to raise the player
 - **Header** with a battery charge ring and time remaining (laptops) or today's date (desktops), plus Edit tiles, System Settings and Power (lock, sleep, hibernate, restart, shut down, switch user, log out)
 - **Settings search:** type to search System Settings pages, Enter opens the first match
+- **Keyboard:** type to search, Ctrl+Tab to switch tabs, Esc to go back from a page or close
 - **Panel indicators:** network, volume and battery icons; scroll on them to change the volume
 - Uses your **colour scheme's accent colour**, like Laetum Launcher
 
@@ -35,7 +41,8 @@ Each tile and row loads on its own, so a missing component only hides that part:
 | Volume, Microphone | `plasma-pa` |
 | Brightness, Night Light, Power profile, Keep awake | `powerdevil` (Power profiles also need `power-profiles-daemon` or `tuned-ppd`) |
 | Battery | `plasma-workspace` |
-| Do Not Disturb | Plasma's Notifications applet (the one in the system tray) |
+| Do Not Disturb, Notifications tab | Plasma's Notifications applet (the one in the system tray) |
+| Calendar tab | `plasma-workspace` |
 | KDE Connect | `kdeconnect` |
 
 ## Install
@@ -43,7 +50,7 @@ Each tile and row loads on its own, so a missing component only hides that part:
 Download `laetum-control-center-<version>.plasmoid` from the [Releases](../../releases) page, then:
 
 ```bash
-kpackagetool6 -t Plasma/Applet -i laetum-control-center-0.1.0.plasmoid
+kpackagetool6 -t Plasma/Applet -i laetum-control-center-0.2.0.plasmoid
 ```
 
 Or from a checkout of this repository:
@@ -72,6 +79,7 @@ Right-click the icon → **Configure Laetum Control Center…** (or the pencil b
 | Panel indicators | Show or hide the network, volume and battery icons on the panel |
 | Tiles | Which tiles appear, and their order |
 | Show | Volume and brightness sliders, media player, settings search bar |
+| Tabs | Show or hide the Notifications and Calendar tabs |
 | Header buttons | Small, Medium (default) or Large |
 | Animations | Squeeze tiles when clicked |
 
@@ -87,11 +95,11 @@ This widget uses some of Plasma's **private** QML modules (the same ones the tra
 
 ## Roadmap
 
-- **Notifications** tab with grouped notifications, actions and Clear all
-- **Calendar** tab
-- **Wi-Fi and Bluetooth pages** that slide in from the tile's › button instead of opening System Settings
 - **Edit mode** in the popup: remove, add and drag tiles
-- Audio output picker from the volume slider
+- Notifications: group by app, job progress (file copies), screenshot thumbnails
+- Calendar: events and holidays from the Digital Clock's calendar plugins
+- KDE Connect: phone battery on the tile
+- Slide animation when opening and closing pages
 
 ## AI Disclosure
 

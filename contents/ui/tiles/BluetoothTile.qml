@@ -34,5 +34,5 @@ Tile {
             adapter.powered = enable;
         });
     }
-    onDetailsRequested: root.openKcm("kcm_bluetooth")
+    onDetailsRequested: root.pageRequested("bluetooth")
 }

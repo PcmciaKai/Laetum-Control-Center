@@ -25,10 +25,10 @@ Tile {
         return wirelessStatus.wifiSSID || i18n("Not connected");
     }
     hasDetails: true
-    detailsTooltip: i18n("Network settings")
+    detailsTooltip: i18n("Wi-Fi networks")
 
     onActivated: handler.enableWireless(!checked)
-    onDetailsRequested: root.openKcm("kcm_networkmanagement")
+    onDetailsRequested: root.pageRequested("wifi")
 
     PlasmaNM.EnabledConnections {
         id: enabledConnections

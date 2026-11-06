@@ -57,7 +57,7 @@ RowLayout {
         icon.name: "go-next-symbolic"
         display: PC3.AbstractButton.IconOnly
         text: i18n("Audio devices")
-        onClicked: root.openKcm("kcm_pulseaudio")
+        onClicked: root.pageRequested("audio")
 
         PC3.ToolTip.text: text
         PC3.ToolTip.visible: hovered

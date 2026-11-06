@@ -73,6 +73,9 @@ PlasmoidItem {
         root.expanded = false;
     }
 
+    // Tiles ask the popup to slide in one of the pages in pages/ ("wifi", "bluetooth", "audio")
+    signal pageRequested(string page)
+
     function openConfiguration() {
         Plasmoid.internalAction("configure").trigger();
         root.expanded = false;

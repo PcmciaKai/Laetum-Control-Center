@@ -16,6 +16,8 @@ KCM.SimpleKCM {
     property alias cfg_showSliders: slidersCheck.checked
     property alias cfg_showMedia: mediaCheck.checked
     property alias cfg_showSearch: searchCheck.checked
+    property alias cfg_showNotificationsTab: notificationsTabCheck.checked
+    property alias cfg_showCalendarTab: calendarTabCheck.checked
     property alias cfg_headerIconSize: iconSizeCombo.currentIndex
     property alias cfg_animateClick: clickCheck.checked
 
@@ -28,6 +30,8 @@ KCM.SimpleKCM {
     property bool cfg_showSlidersDefault
     property bool cfg_showMediaDefault
     property bool cfg_showSearchDefault
+    property bool cfg_showNotificationsTabDefault
+    property bool cfg_showCalendarTabDefault
     property int cfg_headerIconSizeDefault
     property bool cfg_animateClickDefault
 
@@ -190,6 +194,16 @@ KCM.SimpleKCM {
         QQC2.CheckBox {
             id: searchCheck
             text: i18n("Settings search bar")
+        }
+
+        QQC2.CheckBox {
+            id: notificationsTabCheck
+            Kirigami.FormData.label: i18n("Tabs:")
+            text: i18n("Notifications")
+        }
+        QQC2.CheckBox {
+            id: calendarTabCheck
+            text: i18n("Calendar")
         }
 
         QQC2.ComboBox {

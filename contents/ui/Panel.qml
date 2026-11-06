@@ -8,8 +8,13 @@ import org.kde.plasma.private.sessions as Sessions
 import org.kde.kirigami as Kirigami
 import org.kde.kcmutils as KCMUtils
 
-// The popup: opaque header band, then tiles, sliders and media over the translucent body,
-// with a settings search bar at the bottom, all in Laetum Launcher's design language
+// The popup, in Laetum Launcher's design language:
+//   opaque header band (battery or date + buttons, or Back + page title on a drill-in page)
+//   hairline with the sliding accent tab indicator: Controls · Notifications · Calendar
+//   body: the current tab, settings search results while typing, or a drill-in page
+//   search bar with the accent edge
+// Tabs and pages are each loaded on their own, so a broken or missing Plasma component
+// only affects that tab or page, never the whole popup.
 FocusScope {
     id: panel
 
@@ -19,36 +24,74 @@ FocusScope {
     readonly property color headerColor: Kirigami.ColorUtils.tintWithAlpha(Kirigami.Theme.backgroundColor, Kirigami.Theme.textColor, 0.08)
     readonly property int headerIconSize: Math.round(Kirigami.Units.iconSizes.smallMedium * [1, 1.3, 1.6][Math.max(0, Math.min(2, Plasmoid.configuration.headerIconSize))])
 
-    // Tile id (as stored in the "tiles" setting) → file in tiles/
-    readonly property var tileFiles: ({
-        "wifi": "WifiTile.qml",
-        "bluetooth": "BluetoothTile.qml",
-        "nightlight": "NightLightTile.qml",
-        "dnd": "DndTile.qml",
-        "airplane": "AirplaneTile.qml",
-        "powerprofile": "PowerProfileTile.qml",
-        "microphone": "MicrophoneTile.qml",
-        "kdeconnect": "KdeConnectTile.qml",
-        "keepawake": "KeepAwakeTile.qml"
-    })
-
-    Layout.preferredWidth: Kirigami.Units.gridUnit * 22
-    Layout.minimumWidth: Layout.preferredWidth
-    Layout.maximumWidth: Layout.preferredWidth
-    Layout.preferredHeight: column.implicitHeight
-    Layout.minimumHeight: column.implicitHeight
-    Layout.maximumHeight: column.implicitHeight
-
-    function reset() {
-        searchField.text = "";
-        results.reset();
-        if (Plasmoid.configuration.showSearch) {
-            searchField.forceActiveFocus();
+    // ---- Tabs ----
+    readonly property var tabs: {
+        const t = [{ key: "controls", label: i18n("Controls") }];
+        if (notificationsLoader.status === Loader.Ready && notificationsLoader.item.available) {
+            t.push({ key: "notifications", label: i18n("Notifications") });
         }
+        if (calendarLoader.status === Loader.Ready) {
+            t.push({ key: "calendar", label: i18n("Calendar") });
+        }
+        return t;
+    }
+    property string currentTab: "controls"
+    // Falls back to Controls when the chosen tab is switched off or failed to load
+    readonly property string effectiveTab: tabs.some(t => t.key === currentTab) ? currentTab : "controls"
+    readonly property int currentTabIndex: Math.max(0, tabs.findIndex(t => t.key === effectiveTab))
+    readonly property int unreadCount: notificationsLoader.status === Loader.Ready ? notificationsLoader.item.unreadCount : 0
+
+    function selectTab(key) {
+        searchField.text = "";
+        currentTab = key;
+        searchField.forceActiveFocus();
+    }
+
+    function cycleTab(delta) {
+        const n = tabs.length;
+        selectTab(tabs[(currentTabIndex + delta + n) % n].key);
+    }
+
+    // ---- Drill-in pages ----
+    property string page: ""
+    readonly property var pageFiles: ({
+        "wifi": "pages/WifiPage.qml",
+        "bluetooth": "pages/BluetoothPage.qml",
+        "audio": "pages/AudioPage.qml"
+    })
+    // Where a tile's › goes if its page can't load (e.g. an older Plasma)
+    readonly property var pageFallbackKcm: ({
+        "wifi": "kcm_networkmanagement",
+        "bluetooth": "kcm_bluetooth",
+        "audio": "kcm_pulseaudio"
+    })
+    readonly property bool pageOpen: page !== "" && pageLoader.status === Loader.Ready
+    readonly property var pageItem: pageOpen ? pageLoader.item : null
+
+    function openPage(name) {
+        if (!pageFiles[name]) {
+            return;
+        }
+        searchField.text = "";
+        page = name;
+        if (pageLoader.status === Loader.Error) {
+            page = "";
+            root.openKcm(pageFallbackKcm[name]);
+            return;
+        }
+        pageLoader.forceActiveFocus();
+    }
+
+    function closePage() {
+        page = "";
+        searchField.forceActiveFocus();
     }
 
     Connections {
         target: root
+        function onPageRequested(name) {
+            panel.openPage(name);
+        }
         function onExpandedChanged() {
             if (root.expanded) {
                 panel.reset();
@@ -56,7 +99,49 @@ FocusScope {
         }
     }
 
+    // A page whose hardware went away (e.g. a USB Wi-Fi stick) closes itself
+    Connections {
+        target: panel.pageItem
+        ignoreUnknownSignals: true
+        function onAvailableChanged() {
+            if (panel.pageItem && !panel.pageItem.available) {
+                panel.closePage();
+            }
+        }
+    }
+
+    function reset() {
+        page = "";
+        currentTab = "controls";
+        searchField.text = "";
+        results.reset();
+        if (Plasmoid.configuration.showSearch) {
+            searchField.forceActiveFocus();
+        }
+    }
+
     Component.onCompleted: reset()
+
+    Keys.onPressed: (event) => {
+        if (event.key === Qt.Key_Escape && panel.pageOpen) {
+            panel.closePage();
+            event.accepted = true;
+        } else if ((event.key === Qt.Key_Tab || event.key === Qt.Key_Backtab) && (event.modifiers & Qt.ControlModifier) && !panel.pageOpen) {
+            panel.cycleTab(event.key === Qt.Key_Backtab || (event.modifiers & Qt.ShiftModifier) ? -1 : 1);
+            event.accepted = true;
+        }
+    }
+
+    // Stays the height of the Controls tab (but never too short for the calendar), so the
+    // popup doesn't jump when switching tabs or opening a page
+    readonly property real bodyHeight: Math.max(controlsLoader.implicitHeight, Kirigami.Units.gridUnit * 18)
+
+    Layout.preferredWidth: Kirigami.Units.gridUnit * 22
+    Layout.minimumWidth: Layout.preferredWidth
+    Layout.maximumWidth: Layout.preferredWidth
+    Layout.preferredHeight: column.implicitHeight
+    Layout.minimumHeight: column.implicitHeight
+    Layout.maximumHeight: column.implicitHeight
 
     Sessions.SessionManagement {
         id: session
@@ -81,7 +166,9 @@ FocusScope {
         Item {
             id: header
             Layout.fillWidth: true
-            implicitHeight: headerRow.implicitHeight + Math.round(panel.pad * 1.5)
+            // The same height on the home and page headers, so opening a page doesn't move things
+            implicitHeight: Math.max(Kirigami.Units.gridUnit * 2.5, panel.pageOpen ? pageHeader.implicitHeight : homeHeader.implicitHeight)
+                + Math.round(panel.pad * 1.5)
 
             Kirigami.ShadowedRectangle {
                 readonly property real cornerRadius: Plasmoid.location === PlasmaCore.Types.TopEdge ? 0 : Kirigami.Units.cornerRadius
@@ -96,12 +183,14 @@ FocusScope {
                 corners.bottomRightRadius: 0
             }
 
+            // Home: battery ring (laptops) or the date, plus Edit, System Settings and Power
             RowLayout {
-                id: headerRow
+                id: homeHeader
                 anchors.fill: parent
                 anchors.leftMargin: panel.pad
                 anchors.rightMargin: panel.pad
                 spacing: Kirigami.Units.largeSpacing
+                visible: !panel.pageOpen
 
                 Loader {
                     id: batteryBadge
@@ -179,6 +268,58 @@ FocusScope {
                     }
                 }
             }
+
+            // Page: Back, the page's title and status, and its on/off switch
+            RowLayout {
+                id: pageHeader
+                anchors.fill: parent
+                anchors.leftMargin: panel.pad - Kirigami.Units.smallSpacing
+                anchors.rightMargin: panel.pad
+                spacing: Kirigami.Units.largeSpacing
+                visible: panel.pageOpen
+
+                HeaderButton {
+                    iconSize: panel.headerIconSize
+                    iconName: Qt.application.layoutDirection === Qt.RightToLeft ? "go-next-symbolic" : "go-previous-symbolic"
+                    tooltip: i18n("Back")
+                    onClicked: panel.closePage()
+                }
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 0
+
+                    PC3.Label {
+                        id: pageTitle
+                        Layout.fillWidth: true
+                        text: panel.pageItem ? panel.pageItem.title : ""
+                        font.pointSize: Kirigami.Theme.defaultFont.pointSize * 1.25
+                        elide: Text.ElideRight
+                        textFormat: Text.PlainText
+                    }
+                    PC3.Label {
+                        Layout.fillWidth: true
+                        visible: text !== ""
+                        text: panel.pageItem ? panel.pageItem.subtitle : ""
+                        font: Kirigami.Theme.smallFont
+                        opacity: 0.7
+                        elide: Text.ElideRight
+                        textFormat: Text.PlainText
+                    }
+                }
+
+                PC3.Switch {
+                    visible: panel.pageItem ? panel.pageItem.hasSwitch : false
+                    enabled: panel.pageItem ? panel.pageItem.switchEnabled : false
+                    checked: panel.pageItem ? panel.pageItem.switchChecked : false
+                    Accessible.name: pageTitle.text
+                    onToggled: {
+                        panel.pageItem.toggleSwitch();
+                        // Follow the real state, not the click
+                        checked = Qt.binding(() => panel.pageItem ? panel.pageItem.switchChecked : false);
+                    }
+                }
+            }
         }
 
         Rectangle {
@@ -187,85 +328,149 @@ FocusScope {
             color: panel.hairline
         }
 
-        // ---- Body: controls, or settings search results while typing ----
-        StackLayout {
-            Layout.fillWidth: true
-            Layout.leftMargin: panel.pad
-            Layout.rightMargin: panel.pad
-            Layout.topMargin: panel.pad
-            currentIndex: panel.searching ? 1 : 0
+        // ---- Tabs with a sliding accent indicator sitting on the hairline ----
+        ListView {
+            id: tabList
+            Layout.alignment: Qt.AlignHCenter
+            Layout.preferredWidth: Math.min(panel.width - panel.pad * 2, contentWidth)
+            Layout.preferredHeight: Kirigami.Units.gridUnit * 2.6
+            visible: !panel.pageOpen && panel.tabs.length > 1
+            orientation: ListView.Horizontal
+            spacing: Kirigami.Units.smallSpacing
+            // Only clip when the tabs overflow, so the indicator can sit on the hairline above
+            clip: interactive
+            interactive: contentWidth > width
+            boundsBehavior: Flickable.StopAtBounds
+            model: panel.tabs
+            currentIndex: panel.currentTabIndex
+            highlightMoveDuration: Kirigami.Units.longDuration
+            highlightResizeDuration: Kirigami.Units.longDuration
+            highlightFollowsCurrentItem: true
 
-            ColumnLayout {
-                spacing: Kirigami.Units.largeSpacing * 2
+            highlight: Item {
+                Rectangle {
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.margins: Kirigami.Units.largeSpacing
+                    // Centred on the 1px hairline directly above the tab row
+                    y: -2
+                    height: 3
+                    radius: 1.5
+                    color: root.accentColor
+                    opacity: panel.searching ? 0 : 1
+                    Behavior on opacity { NumberAnimation { duration: Kirigami.Units.shortDuration } }
+                }
+            }
 
-                GridLayout {
-                    id: grid
-                    Layout.fillWidth: true
-                    columns: 3
-                    rowSpacing: Kirigami.Units.smallSpacing * 2
-                    columnSpacing: rowSpacing
+            delegate: MouseArea {
+                id: tabItem
+                required property int index
+                required property var modelData
+                readonly property bool current: !panel.searching && panel.currentTabIndex === index
+                readonly property int badge: modelData.key === "notifications" ? panel.unreadCount : 0
 
-                    Repeater {
-                        model: Plasmoid.configuration.tiles
+                width: tabRow.implicitWidth + Kirigami.Units.gridUnit * 2
+                height: ListView.view.height
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: panel.selectTab(modelData.key)
 
-                        delegate: Loader {
-                            required property string modelData
-                            readonly property bool shown: status === Loader.Ready && item.available
+                Accessible.role: Accessible.PageTab
+                Accessible.name: modelData.label
+                Accessible.onPressAction: panel.selectTab(modelData.key)
 
-                            visible: shown
-                            source: panel.tileFiles[modelData] ? "tiles/" + panel.tileFiles[modelData] : ""
-                            Layout.fillWidth: true
-                            // Equal preferred widths + fillWidth = three equal columns
-                            Layout.preferredWidth: Kirigami.Units.gridUnit
-                            Layout.preferredHeight: Kirigami.Units.gridUnit * 4.8
+                RowLayout {
+                    id: tabRow
+                    anchors.centerIn: parent
+                    spacing: Kirigami.Units.smallSpacing
+
+                    PC3.Label {
+                        text: tabItem.modelData.label
+                        font.pointSize: Kirigami.Theme.defaultFont.pointSize * 1.1
+                        font.weight: tabItem.current ? Font.DemiBold : Font.Normal
+                        opacity: tabItem.current || tabItem.containsMouse ? 1 : 0.7
+                        Behavior on opacity { NumberAnimation { duration: Kirigami.Units.shortDuration } }
+                    }
+
+                    // Unread notifications
+                    Rectangle {
+                        visible: tabItem.badge > 0
+                        Layout.preferredHeight: Math.round(Kirigami.Units.gridUnit * 1.05)
+                        Layout.preferredWidth: Math.max(height, badgeLabel.implicitWidth + Kirigami.Units.smallSpacing * 2)
+                        radius: height / 2
+                        color: root.accentColor
+
+                        PC3.Label {
+                            id: badgeLabel
+                            anchors.centerIn: parent
+                            text: tabItem.badge > 99 ? "99+" : tabItem.badge
+                            color: Kirigami.Theme.highlightedTextColor
+                            font.pointSize: Kirigami.Theme.smallFont.pointSize * 0.9
+                            font.weight: Font.Bold
                         }
                     }
                 }
+            }
+        }
 
-                ColumnLayout {
-                    Layout.fillWidth: true
-                    spacing: 0
-                    visible: Plasmoid.configuration.showSliders && (volumeRow.shown || brightnessRows.shown)
+        // ---- Body ----
+        StackLayout {
+            id: body
+            Layout.fillWidth: true
+            Layout.preferredHeight: panel.bodyHeight
+            Layout.leftMargin: panel.pad
+            Layout.rightMargin: panel.pad
+            Layout.topMargin: tabList.visible ? Kirigami.Units.smallSpacing : panel.pad
+            currentIndex: panel.searching ? 1 : (panel.pageOpen ? 2 : 0)
 
-                    Loader {
-                        id: volumeRow
-                        readonly property bool shown: status === Loader.Ready && item.available
-                        Layout.fillWidth: true
-                        visible: shown
-                        active: Plasmoid.configuration.showSliders
-                        source: "rows/VolumeRow.qml"
-                    }
-                    Loader {
-                        id: brightnessRows
-                        readonly property bool shown: status === Loader.Ready && item.available
-                        Layout.fillWidth: true
-                        visible: shown
-                        active: Plasmoid.configuration.showSliders
-                        source: "rows/BrightnessRows.qml"
-                    }
-                }
+            StackLayout {
+                id: tabStack
+                currentIndex: ["controls", "notifications", "calendar"].indexOf(panel.effectiveTab)
 
                 Loader {
-                    id: media
-                    readonly property bool shown: status === Loader.Ready && item.available
-                    Layout.fillWidth: true
-                    visible: shown
-                    active: Plasmoid.configuration.showMedia
-                    source: "rows/MediaCard.qml"
+                    id: controlsLoader
+                    source: "tabs/ControlsTab.qml"
+                }
+                Loader {
+                    id: notificationsLoader
+                    active: Plasmoid.configuration.showNotificationsTab
+                    source: "tabs/NotificationsTab.qml"
+                }
+                Loader {
+                    id: calendarLoader
+                    active: Plasmoid.configuration.showCalendarTab
+                    source: "tabs/CalendarTab.qml"
                 }
             }
 
             SettingsResults {
                 id: results
-                Layout.fillWidth: true
-                Layout.fillHeight: true
             }
+
+            Loader {
+                id: pageLoader
+                source: panel.page !== "" ? (panel.pageFiles[panel.page] ?? "") : ""
+            }
+        }
+
+        // Tell the tabs when they're on screen (to mark notifications read, refresh the calendar)
+        Binding {
+            target: notificationsLoader.item
+            property: "current"
+            value: root.expanded && body.currentIndex === 0 && panel.effectiveTab === "notifications"
+            when: notificationsLoader.status === Loader.Ready
+        }
+        Binding {
+            target: calendarLoader.item
+            property: "current"
+            value: root.expanded && body.currentIndex === 0 && panel.effectiveTab === "calendar"
+            when: calendarLoader.status === Loader.Ready
         }
 
         // ---- Search bar, the same as Laetum Launcher's ----
         Rectangle {
             id: searchBar
-            visible: Plasmoid.configuration.showSearch
+            visible: Plasmoid.configuration.showSearch && !panel.pageOpen
             Layout.fillWidth: true
             Layout.margins: panel.pad
             Layout.preferredHeight: Kirigami.Units.gridUnit * 2.6

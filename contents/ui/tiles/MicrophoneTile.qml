@@ -13,12 +13,12 @@ Tile {
     label: i18n("Microphone")
     status: checked ? i18n("On") : i18n("Muted")
     hasDetails: true
-    detailsTooltip: i18n("Audio settings")
+    detailsTooltip: i18n("Audio devices")
 
     onActivated: {
         if (source) {
             source.muted = !source.muted;
         }
     }
-    onDetailsRequested: root.openKcm("kcm_pulseaudio")
+    onDetailsRequested: root.pageRequested("audio")
 }
