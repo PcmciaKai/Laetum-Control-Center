@@ -15,12 +15,21 @@ KCM.SimpleKCM {
     property alias cfg_showNetworkIndicator: networkCheck.checked
     property alias cfg_showVolumeIndicator: volumeCheck.checked
     property alias cfg_showBatteryIndicator: batteryCheck.checked
+    property alias cfg_showNotificationIndicator: notificationCheck.checked
     property var cfg_tiles: []
     property alias cfg_showSliders: slidersCheck.checked
     property alias cfg_showMedia: mediaCheck.checked
-    property alias cfg_showSearch: searchCheck.checked
+    property alias cfg_showDevices: devicesCheck.checked
+    property alias cfg_showPrintQueue: printQueueCheck.checked
+    // Kept by the popup, not edited here
+    property var cfg_colorHistory
+    property string cfg_lightColorScheme
+    property string cfg_darkColorScheme
+    property string cfg_lightPlasmaStyle
+    property string cfg_darkPlasmaStyle
+    property string cfg_lightIconTheme
+    property string cfg_darkIconTheme
     property alias cfg_showNotificationsTab: notificationsTabCheck.checked
-    property alias cfg_showCalendarTab: calendarTabCheck.checked
     property alias cfg_headerIconSize: iconSizeCombo.currentIndex
     property alias cfg_animateClick: clickCheck.checked
 
@@ -29,12 +38,20 @@ KCM.SimpleKCM {
     property bool cfg_showNetworkIndicatorDefault
     property bool cfg_showVolumeIndicatorDefault
     property bool cfg_showBatteryIndicatorDefault
+    property bool cfg_showNotificationIndicatorDefault
     property var cfg_tilesDefault
     property bool cfg_showSlidersDefault
     property bool cfg_showMediaDefault
-    property bool cfg_showSearchDefault
+    property bool cfg_showDevicesDefault
+    property bool cfg_showPrintQueueDefault
+    property var cfg_colorHistoryDefault
+    property string cfg_lightColorSchemeDefault
+    property string cfg_darkColorSchemeDefault
+    property string cfg_lightPlasmaStyleDefault
+    property string cfg_darkPlasmaStyleDefault
+    property string cfg_lightIconThemeDefault
+    property string cfg_darkIconThemeDefault
     property bool cfg_showNotificationsTabDefault
-    property bool cfg_showCalendarTabDefault
     property int cfg_headerIconSizeDefault
     property bool cfg_animateClickDefault
 
@@ -43,11 +60,14 @@ KCM.SimpleKCM {
         { id: "bluetooth", name: i18n("Bluetooth"), icon: "network-bluetooth" },
         { id: "nightlight", name: i18n("Night Light"), icon: "redshift-status-on" },
         { id: "dnd", name: i18n("Do Not Disturb"), icon: "notifications-disabled-symbolic" },
-        { id: "airplane", name: i18n("Airplane mode"), icon: "network-flightmode-on" },
-        { id: "powerprofile", name: i18n("Power profile"), icon: "speedometer" },
+        { id: "airplane", name: i18n("Airplane Mode"), icon: "network-flightmode-on" },
+        { id: "powerprofile", name: i18n("Power Mode"), icon: "speedometer" },
         { id: "microphone", name: i18n("Microphone"), icon: "microphone-sensitivity-high" },
         { id: "kdeconnect", name: i18n("KDE Connect"), icon: "kdeconnect-tray-symbolic" },
-        { id: "keepawake", name: i18n("Keep awake"), icon: "system-suspend-inhibited" }
+        { id: "keepawake", name: i18n("Keep awake"), icon: "system-suspend-inhibited" },
+        { id: "darkmode", name: i18n("Dark Mode"), icon: "weather-clear-night-symbolic" },
+        { id: "clipboard", name: i18n("Clipboard"), icon: "klipper-symbolic" },
+        { id: "colorpicker", name: i18n("Color Picker"), icon: "color-picker-symbolic" }
     ]
     readonly property var enabledTiles: Array.from(cfg_tiles).filter(id => allTiles.some(t => t.id === id))
     // Shown tiles first, in their order, then the hidden ones
@@ -107,6 +127,10 @@ KCM.SimpleKCM {
         QQC2.CheckBox {
             id: batteryCheck
             text: i18n("Battery")
+        }
+        QQC2.CheckBox {
+            id: notificationCheck
+            text: i18n("Notifications, while unread or Do Not Disturb is on")
         }
 
         Item {
@@ -195,18 +219,18 @@ KCM.SimpleKCM {
             text: i18n("Media player")
         }
         QQC2.CheckBox {
-            id: searchCheck
-            text: i18n("Settings search bar")
+            id: devicesCheck
+            text: i18n("Removable devices, while plugged in")
+        }
+        QQC2.CheckBox {
+            id: printQueueCheck
+            text: i18n("Print queue, while printing")
         }
 
         QQC2.CheckBox {
             id: notificationsTabCheck
             Kirigami.FormData.label: i18n("Tabs:")
             text: i18n("Notifications")
-        }
-        QQC2.CheckBox {
-            id: calendarTabCheck
-            text: i18n("Calendar")
         }
 
         QQC2.ComboBox {

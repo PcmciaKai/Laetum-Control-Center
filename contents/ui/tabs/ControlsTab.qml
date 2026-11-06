@@ -18,11 +18,14 @@ Item {
         "powerprofile": "PowerProfileTile.qml",
         "microphone": "MicrophoneTile.qml",
         "kdeconnect": "KdeConnectTile.qml",
-        "keepawake": "KeepAwakeTile.qml"
+        "keepawake": "KeepAwakeTile.qml",
+        "darkmode": "DarkModeTile.qml",
+        "clipboard": "ClipboardTile.qml",
+        "colorpicker": "ColorPickerTile.qml"
     })
 
-    // The tab area can be taller than this (it's sized for the calendar too); the content
-    // stays at the top
+    // The tab area can be taller than this (when a page needs more room); the content stays
+    // at the top
     implicitHeight: content.implicitHeight
 
     ColumnLayout {
@@ -30,13 +33,13 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
-        spacing: Kirigami.Units.largeSpacing * 2
+        spacing: Math.round(Kirigami.Units.largeSpacing * 2.5)
 
         GridLayout {
             id: grid
             Layout.fillWidth: true
             columns: 3
-            rowSpacing: Kirigami.Units.smallSpacing * 2
+            rowSpacing: Math.round(Kirigami.Units.largeSpacing * 1.25)
             columnSpacing: rowSpacing
 
             Repeater {
@@ -51,14 +54,14 @@ Item {
                     Layout.fillWidth: true
                     // Equal preferred widths + fillWidth = three equal columns
                     Layout.preferredWidth: Kirigami.Units.gridUnit
-                    Layout.preferredHeight: Kirigami.Units.gridUnit * 5
+                    Layout.preferredHeight: Kirigami.Units.gridUnit * 4.8
                 }
             }
         }
 
         ColumnLayout {
             Layout.fillWidth: true
-            spacing: Kirigami.Units.smallSpacing
+            spacing: Kirigami.Units.largeSpacing
             visible: Plasmoid.configuration.showSliders && (volumeRow.shown || brightnessRows.shown)
 
             Loader {
@@ -85,6 +88,23 @@ Item {
             visible: shown
             active: Plasmoid.configuration.showMedia
             source: "../rows/MediaCard.qml"
+        }
+
+        // Pop up like the media card while there is something to show
+        Loader {
+            readonly property bool shown: status === Loader.Ready && item.available
+            Layout.fillWidth: true
+            visible: shown
+            active: Plasmoid.configuration.showDevices
+            source: "../rows/DevicesCard.qml"
+        }
+
+        Loader {
+            readonly property bool shown: status === Loader.Ready && item.available
+            Layout.fillWidth: true
+            visible: shown
+            active: Plasmoid.configuration.showPrintQueue
+            source: "../rows/PrintQueueCard.qml"
         }
     }
 }

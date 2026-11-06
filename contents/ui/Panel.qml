@@ -10,16 +10,14 @@ import org.kde.kcmutils as KCMUtils
 
 // The popup, in Laetum Launcher's design language:
 //   opaque header band (battery or date + buttons, or Back + page title on a drill-in page)
-//   hairline with the sliding accent tab indicator: Controls · Notifications · Calendar
-//   body: the current tab, settings search results while typing, or a drill-in page
-//   search bar with the accent edge
+//   hairline with the sliding accent tab indicator: Controls · Notifications
+//   body: the current tab or a drill-in page
 // Tabs and pages are each loaded on their own, so a broken or missing Plasma component
 // only affects that tab or page, never the whole popup.
 FocusScope {
     id: panel
 
     readonly property int pad: Kirigami.Units.gridUnit
-    readonly property bool searching: root.searchText.length > 0
     readonly property color hairline: Qt.alpha(Kirigami.Theme.textColor, 0.12)
     readonly property color headerColor: Kirigami.ColorUtils.tintWithAlpha(Kirigami.Theme.backgroundColor, Kirigami.Theme.textColor, 0.08)
     readonly property int headerIconSize: Math.round(Kirigami.Units.iconSizes.smallMedium * [1, 1.3, 1.6][Math.max(0, Math.min(2, Plasmoid.configuration.headerIconSize))])
@@ -30,9 +28,6 @@ FocusScope {
         if (notificationsLoader.status === Loader.Ready && notificationsLoader.item.available) {
             t.push({ key: "notifications", label: i18n("Notifications") });
         }
-        if (calendarLoader.status === Loader.Ready) {
-            t.push({ key: "calendar", label: i18n("Calendar") });
-        }
         return t;
     }
     property string currentTab: "controls"
@@ -42,9 +37,8 @@ FocusScope {
     readonly property int unreadCount: notificationsLoader.status === Loader.Ready ? notificationsLoader.item.unreadCount : 0
 
     function selectTab(key) {
-        searchField.text = "";
         currentTab = key;
-        searchField.forceActiveFocus();
+        panel.forceActiveFocus();
     }
 
     function cycleTab(delta) {
@@ -57,13 +51,17 @@ FocusScope {
     readonly property var pageFiles: ({
         "wifi": "pages/WifiPage.qml",
         "bluetooth": "pages/BluetoothPage.qml",
-        "audio": "pages/AudioPage.qml"
+        "audio": "pages/AudioPage.qml",
+        "clipboard": "pages/ClipboardPage.qml",
+        "colors": "pages/ColorsPage.qml"
     })
     // Where a tile's › goes if its page can't load (e.g. an older Plasma)
     readonly property var pageFallbackKcm: ({
         "wifi": "kcm_networkmanagement",
         "bluetooth": "kcm_bluetooth",
-        "audio": "kcm_pulseaudio"
+        "audio": "kcm_pulseaudio",
+        "clipboard": "",
+        "colors": ""
     })
     readonly property bool pageOpen: page !== "" && pageLoader.status === Loader.Ready
     readonly property var pageItem: pageOpen ? pageLoader.item : null
@@ -72,11 +70,12 @@ FocusScope {
         if (!pageFiles[name]) {
             return;
         }
-        searchField.text = "";
         page = name;
         if (pageLoader.status === Loader.Error) {
             page = "";
-            root.openKcm(pageFallbackKcm[name]);
+            if (pageFallbackKcm[name]) {
+                root.openKcm(pageFallbackKcm[name]);
+            }
             return;
         }
         pageLoader.forceActiveFocus();
@@ -84,7 +83,7 @@ FocusScope {
 
     function closePage() {
         page = "";
-        searchField.forceActiveFocus();
+        panel.forceActiveFocus();
     }
 
     Connections {
@@ -113,18 +112,18 @@ FocusScope {
     function reset() {
         page = "";
         currentTab = "controls";
-        searchField.text = "";
-        results.reset();
-        if (Plasmoid.configuration.showSearch) {
-            searchField.forceActiveFocus();
-        }
+        panel.forceActiveFocus();
     }
 
     Component.onCompleted: reset()
 
     Keys.onPressed: (event) => {
-        if (event.key === Qt.Key_Escape && panel.pageOpen) {
-            panel.closePage();
+        if (event.key === Qt.Key_Escape) {
+            if (panel.pageOpen) {
+                panel.closePage();
+            } else {
+                root.expanded = false;
+            }
             event.accepted = true;
         } else if ((event.key === Qt.Key_Tab || event.key === Qt.Key_Backtab) && (event.modifiers & Qt.ControlModifier) && !panel.pageOpen) {
             panel.cycleTab(event.key === Qt.Key_Backtab || (event.modifiers & Qt.ShiftModifier) ? -1 : 1);
@@ -132,11 +131,11 @@ FocusScope {
         }
     }
 
-    // Stays the height of the Controls tab (but never too short for the calendar), so the
-    // popup doesn't jump when switching tabs or opening a page
-    readonly property real bodyHeight: Math.max(controlsLoader.implicitHeight, Kirigami.Units.gridUnit * 18)
+    // Stays the height of the Controls tab (but never too short for a page), so the popup
+    // doesn't jump when switching tabs or opening a page
+    readonly property real bodyHeight: Math.max(controlsLoader.implicitHeight, Kirigami.Units.gridUnit * 16)
 
-    Layout.preferredWidth: Kirigami.Units.gridUnit * 22
+    Layout.preferredWidth: Kirigami.Units.gridUnit * 25.5
     Layout.minimumWidth: Layout.preferredWidth
     Layout.maximumWidth: Layout.preferredWidth
     Layout.preferredHeight: column.implicitHeight
@@ -357,8 +356,6 @@ FocusScope {
                     height: 3
                     radius: 1.5
                     color: root.accentColor
-                    opacity: panel.searching ? 0 : 1
-                    Behavior on opacity { NumberAnimation { duration: Kirigami.Units.shortDuration } }
                 }
             }
 
@@ -366,7 +363,7 @@ FocusScope {
                 id: tabItem
                 required property int index
                 required property var modelData
-                readonly property bool current: !panel.searching && panel.currentTabIndex === index
+                readonly property bool current: panel.currentTabIndex === index
                 readonly property int badge: modelData.key === "notifications" ? panel.unreadCount : 0
 
                 width: tabRow.implicitWidth + Kirigami.Units.gridUnit * 2
@@ -396,13 +393,18 @@ FocusScope {
                     Rectangle {
                         visible: tabItem.badge > 0
                         Layout.preferredHeight: Math.round(Kirigami.Units.gridUnit * 1.05)
-                        Layout.preferredWidth: Math.max(height, badgeLabel.implicitWidth + Kirigami.Units.smallSpacing * 2)
+                        Layout.preferredWidth: Math.max(height, badgeLabel.contentWidth + Kirigami.Units.smallSpacing * 2)
                         radius: height / 2
                         color: root.accentColor
 
+                        // Fill + centred alignment rather than centerIn: the label's line
+                        // height includes leading, which pushes a centred digit off-centre
                         PC3.Label {
                             id: badgeLabel
-                            anchors.centerIn: parent
+                            anchors.fill: parent
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            padding: 0
                             text: tabItem.badge > 99 ? "99+" : tabItem.badge
                             color: Kirigami.Theme.highlightedTextColor
                             font.pointSize: Kirigami.Theme.smallFont.pointSize * 0.9
@@ -421,11 +423,11 @@ FocusScope {
             Layout.leftMargin: panel.pad
             Layout.rightMargin: panel.pad
             Layout.topMargin: tabList.visible ? Kirigami.Units.smallSpacing : panel.pad
-            currentIndex: panel.searching ? 1 : (panel.pageOpen ? 2 : 0)
+            currentIndex: panel.pageOpen ? 1 : 0
 
             StackLayout {
                 id: tabStack
-                currentIndex: ["controls", "notifications", "calendar"].indexOf(panel.effectiveTab)
+                currentIndex: ["controls", "notifications"].indexOf(panel.effectiveTab)
 
                 Loader {
                     id: controlsLoader
@@ -436,15 +438,6 @@ FocusScope {
                     active: Plasmoid.configuration.showNotificationsTab
                     source: "tabs/NotificationsTab.qml"
                 }
-                Loader {
-                    id: calendarLoader
-                    active: Plasmoid.configuration.showCalendarTab
-                    source: "tabs/CalendarTab.qml"
-                }
-            }
-
-            SettingsResults {
-                id: results
             }
 
             Loader {
@@ -453,96 +446,15 @@ FocusScope {
             }
         }
 
-        // Tell the tabs when they're on screen (to mark notifications read, refresh the calendar)
+        // Tell the Notifications tab when it's on screen, to mark notifications read
         Binding {
             target: notificationsLoader.item
             property: "current"
             value: root.expanded && body.currentIndex === 0 && panel.effectiveTab === "notifications"
             when: notificationsLoader.status === Loader.Ready
         }
-        Binding {
-            target: calendarLoader.item
-            property: "current"
-            value: root.expanded && body.currentIndex === 0 && panel.effectiveTab === "calendar"
-            when: calendarLoader.status === Loader.Ready
-        }
 
-        // ---- Search bar, the same as Laetum Launcher's ----
-        Rectangle {
-            id: searchBar
-            visible: Plasmoid.configuration.showSearch && !panel.pageOpen
-            Layout.fillWidth: true
-            Layout.margins: panel.pad
-            Layout.preferredHeight: Kirigami.Units.gridUnit * 2.6
-            radius: Kirigami.Units.cornerRadius * 1.5
-            color: Qt.alpha(Kirigami.Theme.textColor, 0.06)
-            border.width: 1
-            border.color: searchField.activeFocus ? Qt.alpha(root.accentColor, 0.5) : panel.hairline
-
-            Rectangle {
-                anchors { left: parent.left; right: parent.right; top: parent.top }
-                anchors.leftMargin: parent.radius / 2
-                anchors.rightMargin: parent.radius / 2
-                height: 3
-                radius: 1.5
-                color: root.accentColor
-            }
-
-            RowLayout {
-                anchors.fill: parent
-                anchors.leftMargin: Kirigami.Units.largeSpacing
-                anchors.rightMargin: Kirigami.Units.largeSpacing
-                spacing: Kirigami.Units.smallSpacing
-
-                PC3.TextField {
-                    id: searchField
-                    Layout.fillWidth: true
-                    focus: true
-                    background: null
-                    placeholderText: i18n("Search settings")
-                    font.pointSize: Kirigami.Theme.defaultFont.pointSize * 1.1
-                    onTextChanged: root.searchText = text
-
-                    Keys.onPressed: (event) => {
-                        switch (event.key) {
-                        case Qt.Key_Up:
-                        case Qt.Key_Down:
-                            if (panel.searching) {
-                                results.moveKey(event.key);
-                                event.accepted = true;
-                            }
-                            break;
-                        case Qt.Key_Return:
-                        case Qt.Key_Enter:
-                            if (panel.searching) {
-                                results.activate();
-                                event.accepted = true;
-                            }
-                            break;
-                        case Qt.Key_Escape:
-                            if (text !== "") {
-                                text = "";
-                            } else {
-                                root.expanded = false;
-                            }
-                            event.accepted = true;
-                            break;
-                        }
-                    }
-                }
-
-                Kirigami.Icon {
-                    Layout.preferredWidth: Kirigami.Units.iconSizes.smallMedium
-                    Layout.preferredHeight: Kirigami.Units.iconSizes.smallMedium
-                    source: "search-symbolic"
-                    opacity: 0.7
-                }
-            }
-        }
-
-        // Bottom padding when the search bar is hidden
         Item {
-            visible: !searchBar.visible
             Layout.preferredHeight: panel.pad
         }
     }

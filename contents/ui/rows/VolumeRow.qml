@@ -57,6 +57,9 @@ RowLayout {
     PC3.ToolButton {
         icon.name: "go-next-symbolic"
         display: PC3.AbstractButton.IconOnly
+        // Same arrow size as on the tiles
+        icon.width: Kirigami.Units.iconSizes.small
+        icon.height: Kirigami.Units.iconSizes.small
         text: i18n("Audio devices")
         onClicked: root.pageRequested("audio")
 

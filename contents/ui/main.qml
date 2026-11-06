@@ -5,7 +5,7 @@ import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.plasma5support as P5Support
 import org.kde.kirigami as Kirigami
 import org.kde.kcmutils as KCMUtils
-import org.kde.plasma.private.kicker as Kicker
+import org.kde.plasma.workspace.dbus as DBus
 
 PlasmoidItem {
     id: root
@@ -15,16 +15,6 @@ PlasmoidItem {
     hideOnWindowDeactivate: true
     toolTipMainText: Plasmoid.title
     toolTipSubText: i18n("Quick settings, volume, brightness and media")
-
-    // Settings search, shared by the popup
-    property string searchText: ""
-
-    readonly property Kicker.RunnerModel runnerModel: Kicker.RunnerModel {
-        appletInterface: root
-        mergeResults: true
-        runners: ["krunner_systemsettings"]
-        query: root.searchText
-    }
 
     // Same accent handling as Laetum Launcher: the colour scheme's accent colour, even with
     // Plasma styles that ship their own highlight colour
@@ -73,8 +63,79 @@ PlasmoidItem {
         root.expanded = false;
     }
 
-    // Tiles ask the popup to slide in one of the pages in pages/ ("wifi", "bluetooth", "audio")
+    // Tiles ask the popup to slide in one of the pages in pages/ ("wifi", "bluetooth", "audio", ...)
     signal pageRequested(string page)
+
+    // Through Klipper, so it works with the popup closed and lands in the clipboard history.
+    // Without Klipper (the tray's Clipboard entry turned off) through Qt's clipboard instead.
+    function copyText(text) {
+        if (!klipper.registered) {
+            copyHelper.text = text;
+            copyHelper.selectAll();
+            copyHelper.copy();
+            return;
+        }
+        DBus.SessionBus.asyncCall({
+            "service": "org.kde.klipper",
+            "path": "/klipper",
+            "iface": "org.kde.klipper.klipper",
+            "member": "setClipboardContents",
+            "signature": "s",
+            "arguments": [new DBus.string(text)]
+        });
+    }
+
+    DBus.DBusServiceWatcher {
+        id: klipper
+        busType: DBus.BusType.Session
+        watchedService: "org.kde.klipper"
+    }
+
+    TextEdit {
+        id: copyHelper
+        visible: false
+    }
+
+    // ---- Colour picker ----
+    readonly property int colorHistoryLength: 12
+
+    function rememberColor(hex) {
+        const history = Array.from(Plasmoid.configuration.colorHistory).filter(c => c !== hex);
+        history.unshift(hex);
+        Plasmoid.configuration.colorHistory = history.slice(0, colorHistoryLength);
+    }
+
+    // KWin's picker (the one the Color Picker applet uses): crosshair, click, ARGB back.
+    // The popup closes first so it isn't in the way.
+    function pickColor() {
+        root.expanded = false;
+        pickDelay.start();
+    }
+
+    Timer {
+        id: pickDelay
+        interval: Kirigami.Units.longDuration * 2
+        onTriggered: DBus.SessionBus.asyncCall({
+            "service": "org.kde.KWin",
+            "path": "/ColorPicker",
+            "iface": "org.kde.kwin.ColorPicker",
+            "member": "pick"
+        }, (reply) => {
+            let argb = reply.value;
+            if (Array.isArray(argb)) {
+                argb = argb[0];
+            }
+            argb = Number(argb);
+            if (isNaN(argb)) {
+                return;
+            }
+            const hex = "#" + (argb & 0xffffff).toString(16).padStart(6, "0").toUpperCase();
+            root.rememberColor(hex);
+            root.copyText(hex);
+        }, () => {
+            // Escape cancels the pick with an error reply
+        })
+    }
 
     function openConfiguration() {
         Plasmoid.internalAction("configure").trigger();

@@ -17,10 +17,13 @@
     <entry name="showBatteryIndicator" type="Bool">
       <default>true</default>
     </entry>
+    <entry name="showNotificationIndicator" type="Bool">
+      <default>true</default>
+    </entry>
 
     <!-- Popup -->
     <entry name="tiles" type="StringList">
-      <default>wifi,bluetooth,nightlight,dnd,airplane,powerprofile,microphone,kdeconnect,keepawake</default>
+      <default>wifi,bluetooth,nightlight,dnd,airplane,powerprofile,microphone,kdeconnect,keepawake,darkmode,clipboard,colorpicker</default>
     </entry>
     <entry name="showSliders" type="Bool">
       <default>true</default>
@@ -28,17 +31,41 @@
     <entry name="showMedia" type="Bool">
       <default>true</default>
     </entry>
-    <entry name="showSearch" type="Bool">
+    <entry name="showDevices" type="Bool">
+      <default>true</default>
+    </entry>
+    <entry name="showPrintQueue" type="Bool">
       <default>true</default>
     </entry>
     <entry name="showNotificationsTab" type="Bool">
       <default>true</default>
     </entry>
-    <entry name="showCalendarTab" type="Bool">
-      <default>true</default>
-    </entry>
     <entry name="headerIconSize" type="Int">
       <default>1</default>
+    </entry>
+    <!-- Remembered between runs -->
+    <entry name="colorHistory" type="StringList">
+      <default></default>
+    </entry>
+    <!-- Dark Mode tile without default light/dark global themes: what each side applies,
+         updated with whatever was active before each switch. Empty means leave it as is. -->
+    <entry name="lightColorScheme" type="String">
+      <default>BreezeLight</default>
+    </entry>
+    <entry name="darkColorScheme" type="String">
+      <default>BreezeDark</default>
+    </entry>
+    <entry name="lightPlasmaStyle" type="String">
+      <default>default</default>
+    </entry>
+    <entry name="darkPlasmaStyle" type="String">
+      <default></default>
+    </entry>
+    <entry name="lightIconTheme" type="String">
+      <default>breeze</default>
+    </entry>
+    <entry name="darkIconTheme" type="String">
+      <default></default>
     </entry>
     <entry name="animateClick" type="Bool">
       <default>true</default>

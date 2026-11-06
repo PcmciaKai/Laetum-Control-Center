@@ -5,6 +5,7 @@ import org.kde.plasma.extras as PlasmaExtras
 import org.kde.kirigami as Kirigami
 import org.kde.notificationmanager as NotificationManager
 import org.kde.plasma.workspace.dbus as DBus
+import ".."
 
 // Notification history, from the same shared model the Notifications applet uses:
 // closing or reading a notification here does the same over there
@@ -15,7 +16,7 @@ ColumnLayout {
     property bool current: false
 
     // For the badge on the tab
-    readonly property int unreadCount: history.unreadNotificationsCount
+    readonly property int unreadCount: unread.count
     readonly property bool available: NotificationManager.Server.valid
 
     // Ticks once a minute so "5 min ago" stays right
@@ -27,6 +28,16 @@ ColumnLayout {
         if (current) {
             now = new Date();
             markAllRead();
+        }
+    }
+
+    // ClearExpired only removes notifications that timed out. The rest (a popup still on
+    // screen, resident or dismissed ones) are closed one by one, from the end so the rows
+    // don't shift under the loop.
+    function clearAll() {
+        history.clear(NotificationManager.Notifications.ClearExpired);
+        for (let i = history.count - 1; i >= 0; --i) {
+            history.close(history.index(i, 0));
         }
     }
 
@@ -55,6 +66,11 @@ ColumnLayout {
 
     NotificationManager.Settings {
         id: settings
+    }
+
+    UnreadCounter {
+        id: unread
+        model: history
     }
 
     NotificationManager.Notifications {
@@ -107,7 +123,7 @@ ColumnLayout {
             icon.name: "edit-clear-history-symbolic"
             text: i18n("Clear all")
             enabled: history.count > 0
-            onClicked: history.clear(NotificationManager.Notifications.ClearExpired)
+            onClicked: notificationsTab.clearAll()
         }
     }
 

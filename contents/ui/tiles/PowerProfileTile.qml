@@ -22,7 +22,7 @@ Tile {
     // Highlighted whenever a non-default profile is active, like the battery applet's status
     checked: profile !== "" && profile !== (profiles.configuredProfile || "balanced")
     iconName: icons[profile] ?? "speedometer"
-    label: i18n("Power profile")
+    label: i18n("Power Mode")
     status: names[profile] ?? profile
     hasDetails: true
     detailsTooltip: i18n("Power management settings")

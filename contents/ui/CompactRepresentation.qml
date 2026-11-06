@@ -16,7 +16,7 @@ MouseArea {
         // Same default as the system tray: small-medium icons, smaller only on thin panels
         return Math.min(Kirigami.Units.iconSizes.smallMedium, Kirigami.Units.iconSizes.roundedIconSize(thickness));
     }
-    readonly property bool anyIndicator: network.shown || volume.shown || battery.shown
+    readonly property bool anyIndicator: network.shown || volume.shown || battery.shown || notifications.shown
 
     Layout.minimumWidth: vertical ? -1 : layout.implicitWidth + Kirigami.Units.smallSpacing * 2
     Layout.maximumWidth: vertical ? -1 : Layout.minimumWidth
@@ -67,6 +67,15 @@ MouseArea {
             visible: shown
             active: Plasmoid.configuration.showBatteryIndicator
             source: "indicators/BatteryIndicator.qml"
+            Layout.preferredWidth: compact.iconSize
+            Layout.preferredHeight: compact.iconSize
+        }
+        Loader {
+            id: notifications
+            readonly property bool shown: Plasmoid.configuration.showNotificationIndicator && status === Loader.Ready && item.available
+            visible: shown
+            active: Plasmoid.configuration.showNotificationIndicator
+            source: "indicators/NotificationIndicator.qml"
             Layout.preferredWidth: compact.iconSize
             Layout.preferredHeight: compact.iconSize
         }

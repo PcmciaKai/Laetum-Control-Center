@@ -11,7 +11,7 @@ ColumnLayout {
 
     readonly property bool available: control.isBrightnessAvailable && repeater.count > 0
 
-    spacing: Kirigami.Units.smallSpacing
+    spacing: Kirigami.Units.largeSpacing
 
     ScreenBrightnessControl {
         id: control
@@ -37,7 +37,6 @@ ColumnLayout {
             spacing: Kirigami.Units.largeSpacing
 
             PC3.ToolButton {
-                id: iconButton
                 icon.name: "brightness-high"
                 display: PC3.AbstractButton.IconOnly
                 text: repeater.count > 1 ? i18n("%1: display settings", row.label) : i18n("Display settings")
@@ -72,10 +71,15 @@ ColumnLayout {
                 }
             }
 
-            // Keeps the slider the same length as the volume slider, which has a chevron here
-            Item {
-                Layout.preferredWidth: iconButton.implicitWidth
-                Layout.preferredHeight: 1
+            // Invisible twin of the volume row's chevron, so both sliders are the same length
+            PC3.ToolButton {
+                icon.name: "go-next-symbolic"
+                icon.width: Kirigami.Units.iconSizes.small
+                icon.height: Kirigami.Units.iconSizes.small
+                display: PC3.AbstractButton.IconOnly
+                opacity: 0
+                enabled: false
+                Accessible.ignored: true
             }
         }
     }

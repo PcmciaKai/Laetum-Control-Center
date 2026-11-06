@@ -12,6 +12,8 @@ Item {
 
     property string iconName
     property string label
+    // Unabbreviated name for the tooltip and screen readers
+    property string fullLabel: label
     property string status
     property bool checked: false
     property bool available: true
@@ -76,18 +78,23 @@ Item {
             id: main
             anchors.fill: parent
             padding: Math.round(Kirigami.Units.largeSpacing * 1.5)
+            horizontalPadding: Math.round(Kirigami.Units.largeSpacing * 1.25)
             hoverEnabled: true
             background: null
             enabled: tile.toggleEnabled
             opacity: enabled ? 1 : 0.5
 
             Accessible.role: Accessible.Button
-            Accessible.name: tile.label
+            Accessible.name: tile.fullLabel
             Accessible.description: tile.status
             Accessible.checkable: true
             Accessible.checked: tile.checked
 
             onClicked: tile.activated()
+
+            PC3.ToolTip.text: tile.fullLabel
+            PC3.ToolTip.visible: hovered && tile.fullLabel !== tile.label
+            PC3.ToolTip.delay: Kirigami.Units.toolTipDelay
 
             contentItem: ColumnLayout {
                 spacing: 0
@@ -109,8 +116,6 @@ Item {
                     text: tile.label
                     color: tile.fg
                     font.weight: Font.DemiBold
-                    wrapMode: Text.WordWrap
-                    maximumLineCount: 2
                     elide: Text.ElideRight
                     textFormat: Text.PlainText
                 }
@@ -131,10 +136,12 @@ Item {
         T.AbstractButton {
             id: more
             visible: tile.hasDetails
+            // Vertically centred on the tile's icon, with the arrow glyph on the content's right edge
             anchors.top: parent.top
             anchors.right: parent.right
-            anchors.margins: 3
-            width: Kirigami.Units.gridUnit * 1.9
+            anchors.topMargin: Math.round(main.topPadding + Kirigami.Units.iconSizes.smallMedium / 2 - height / 2)
+            anchors.rightMargin: Math.round(main.rightPadding - (width - Kirigami.Units.iconSizes.small) / 2)
+            width: Kirigami.Units.gridUnit * 1.6
             height: width
             hoverEnabled: true
 

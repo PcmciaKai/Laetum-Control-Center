@@ -11,7 +11,8 @@ Tile {
     available: NotificationManager.Server.valid
     checked: NotificationManager.Server.inhibited
     iconName: checked ? "notifications-disabled-symbolic" : "notification-inactive-symbolic"
-    label: i18n("Do Not Disturb")
+    label: i18nc("Short for Do Not Disturb", "DND")
+    fullLabel: i18n("Do Not Disturb")
     status: checked ? i18n("On") : i18n("Off")
     hasDetails: true
     detailsTooltip: i18n("Notification settings")
