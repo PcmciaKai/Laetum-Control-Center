@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kcfg xmlns="http://www.kde.org/standards/kcfg/1.0"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0 http://www.kde.org/standards/kcfg/1.0/kcfg.xsd">
+  <kcfgfile name=""/>
+  <group name="General">
+    <!-- Panel -->
+    <entry name="icon" type="String">
+      <default>preferences-system-symbolic</default>
+    </entry>
+    <entry name="showNetworkIndicator" type="Bool">
+      <default>true</default>
+    </entry>
+    <entry name="showVolumeIndicator" type="Bool">
+      <default>true</default>
+    </entry>
+    <entry name="showBatteryIndicator" type="Bool">
+      <default>true</default>
+    </entry>
+
+    <!-- Popup -->
+    <entry name="tiles" type="StringList">
+      <default>wifi,bluetooth,nightlight,dnd,airplane,powerprofile,microphone,kdeconnect,keepawake</default>
+    </entry>
+    <entry name="showSliders" type="Bool">
+      <default>true</default>
+    </entry>
+    <entry name="showMedia" type="Bool">
+      <default>true</default>
+    </entry>
+    <entry name="showSearch" type="Bool">
+      <default>true</default>
+    </entry>
+    <entry name="headerIconSize" type="Int">
+      <default>1</default>
+    </entry>
+    <entry name="animateClick" type="Bool">
+      <default>true</default>
+    </entry>
+  </group>
+</kcfg>
