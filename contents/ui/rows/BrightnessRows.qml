@@ -11,7 +11,7 @@ ColumnLayout {
 
     readonly property bool available: control.isBrightnessAvailable && repeater.count > 0
 
-    spacing: 0
+    spacing: Kirigami.Units.smallSpacing
 
     ScreenBrightnessControl {
         id: control
@@ -33,7 +33,8 @@ ColumnLayout {
             readonly property int percent: maxBrightness > 0 ? Math.round(brightness / maxBrightness * 100) : 0
 
             Layout.fillWidth: true
-            spacing: Kirigami.Units.smallSpacing
+            Layout.minimumHeight: Kirigami.Units.gridUnit * 2
+            spacing: Kirigami.Units.largeSpacing
 
             PC3.ToolButton {
                 id: iconButton
@@ -59,7 +60,7 @@ ColumnLayout {
             }
 
             PC3.Label {
-                Layout.preferredWidth: valueMetrics.width
+                Layout.preferredWidth: valueMetrics.width + Kirigami.Units.smallSpacing
                 horizontalAlignment: Text.AlignRight
                 text: row.percent
                 opacity: 0.7

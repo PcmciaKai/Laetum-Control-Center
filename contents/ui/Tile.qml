@@ -109,6 +109,8 @@ Item {
                     text: tile.label
                     color: tile.fg
                     font.weight: Font.DemiBold
+                    wrapMode: Text.WordWrap
+                    maximumLineCount: 2
                     elide: Text.ElideRight
                     textFormat: Text.PlainText
                 }

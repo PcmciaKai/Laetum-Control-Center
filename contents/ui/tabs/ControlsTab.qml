@@ -51,14 +51,14 @@ Item {
                     Layout.fillWidth: true
                     // Equal preferred widths + fillWidth = three equal columns
                     Layout.preferredWidth: Kirigami.Units.gridUnit
-                    Layout.preferredHeight: Kirigami.Units.gridUnit * 4.8
+                    Layout.preferredHeight: Kirigami.Units.gridUnit * 5
                 }
             }
         }
 
         ColumnLayout {
             Layout.fillWidth: true
-            spacing: 0
+            spacing: Kirigami.Units.smallSpacing
             visible: Plasmoid.configuration.showSliders && (volumeRow.shown || brightnessRows.shown)
 
             Loader {

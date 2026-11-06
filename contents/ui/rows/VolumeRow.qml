@@ -12,7 +12,8 @@ RowLayout {
     readonly property bool available: sink !== null
     readonly property int percent: sink ? Math.round(sink.volume / PulseAudio.NormalVolume * 100) : 0
 
-    spacing: Kirigami.Units.smallSpacing
+    Layout.minimumHeight: Kirigami.Units.gridUnit * 2
+    spacing: Kirigami.Units.largeSpacing
 
     PC3.ToolButton {
         icon.name: row.sink ? AudioIcon.forVolume(row.percent, row.sink.muted, "") : "audio-volume-muted"
@@ -41,7 +42,7 @@ RowLayout {
     }
 
     PC3.Label {
-        Layout.preferredWidth: valueMetrics.width
+        Layout.preferredWidth: valueMetrics.width + Kirigami.Units.smallSpacing
         horizontalAlignment: Text.AlignRight
         text: row.percent
         opacity: 0.7

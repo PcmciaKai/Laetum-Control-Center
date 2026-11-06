@@ -8,6 +8,9 @@ import org.kde.iconthemes as KIconThemes
 KCM.SimpleKCM {
     id: page
 
+    // Injected by Plasma 6.7 into every applet config page
+    property bool cfg_expanding
+    property int cfg_length
     property string cfg_icon
     property alias cfg_showNetworkIndicator: networkCheck.checked
     property alias cfg_showVolumeIndicator: volumeCheck.checked
