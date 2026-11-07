@@ -17,6 +17,7 @@ It talks to the same Plasma components as the built-in system tray applets (Netw
   - Wi-Fi, Bluetooth and Microphone (and the volume slider's ›) slide in a page inside the popup: pick and connect to Wi-Fi networks (with an inline password field), connect paired Bluetooth devices or pair a new one, choose the default sound output and input
   - The other tiles' › opens the matching System Settings page
   - **Dark Mode** applies your default light or dark global theme (System Settings → Colors & Themes) if both are set, and otherwise switches the colour scheme, remembering the one you switched away from
+  - **KDE Connect** opens a page like the KDE Connect applet: each connected device's battery, ring / browse files / send clipboard, the remote keyboard field and the phone's notifications (dismiss or reply)
   - **Clipboard** opens Klipper's history, with thumbnails for pictures; click an entry to copy it again (needs the tray's Clipboard entry, which can be set to "Always hidden")
   - **Color Picker** picks a colour from the screen and copies its hex code; › shows the picked colours
   - Tiles for hardware you don't have (e.g. Wi-Fi on a desktop) hide themselves
@@ -103,7 +104,7 @@ This widget uses some of Plasma's **private** QML modules (the same ones the tra
 
 - **Edit mode** in the popup: remove, add and drag tiles
 - Notifications: group by app, job progress (file copies), screenshot thumbnails
-- KDE Connect: phone battery on the tile
+- KDE Connect: phone battery on the tile, sharing a file
 - Slide animation when opening and closing pages
 
 ## AI Disclosure

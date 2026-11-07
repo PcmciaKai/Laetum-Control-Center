@@ -53,7 +53,8 @@ FocusScope {
         "bluetooth": "pages/BluetoothPage.qml",
         "audio": "pages/AudioPage.qml",
         "clipboard": "pages/ClipboardPage.qml",
-        "colors": "pages/ColorsPage.qml"
+        "colors": "pages/ColorsPage.qml",
+        "kdeconnect": "pages/KdeConnectPage.qml"
     })
     // Where a tile's › goes if its page can't load (e.g. an older Plasma)
     readonly property var pageFallbackKcm: ({
@@ -61,7 +62,8 @@ FocusScope {
         "bluetooth": "kcm_bluetooth",
         "audio": "kcm_pulseaudio",
         "clipboard": "",
-        "colors": ""
+        "colors": "",
+        "kdeconnect": ""
     })
     readonly property bool pageOpen: page !== "" && pageLoader.status === Loader.Ready
     readonly property var pageItem: pageOpen ? pageLoader.item : null

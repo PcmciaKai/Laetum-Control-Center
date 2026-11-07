@@ -24,14 +24,9 @@ Tile {
         }
         return i18ncp("Number of connected devices", "%1 connected", "%1 connected", reachableCount);
     }
-    hasDetails: true
-    detailsTooltip: i18n("KDE Connect settings")
-
-    onActivated: root.runApp("org.kde.kdeconnect.app")
-    onDetailsRequested: {
-        KDEConnect.OpenConfig.openConfiguration();
-        root.expanded = false;
-    }
+    // Battery, notifications and the remote keyboard, in a page like the KDE Connect applet;
+    // the page has a button to open the KDE Connect app
+    onActivated: root.pageRequested("kdeconnect")
 
     KDEConnect.DevicesModel {
         id: paired

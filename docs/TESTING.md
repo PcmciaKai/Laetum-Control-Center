@@ -35,6 +35,7 @@ plasmoidviewer -a local.laetum.controlcenter -l bottomedge -f horizontal
 - [ ] Tile labels fit on one line, and the › arrows line up with the tile icons
 - [ ] Dark Mode switches light ↔ dark and back to the original scheme or theme
 - [ ] Clipboard shows the item count; its page lists the history, clicking an entry copies it, Clear history empties it
+- [ ] KDE Connect opens its page: battery, ring / browse / send clipboard work; the remote keyboard field appears while the phone asks for it; phone notifications can be dismissed and replied to
 - [ ] Color Picker: clicking closes the popup and shows KWin's picker; the hex code is copied and appears on the tile and in the › page; Esc cancels
 - [ ] Tiles for missing hardware are hidden
 - [ ] Volume slider, mute button and the number stay in sync with the tray's volume
