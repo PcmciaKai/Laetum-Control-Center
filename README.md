@@ -2,10 +2,18 @@
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-KDE%20Plasma%206-1D99F3?logo=kde&logoColor=white)](https://kde.org/plasma-desktop/)
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-Support%20me-FF5E5B?logo=ko-fi&logoColor=white)](https://ko-fi.com/pcmciakai)
 
 A quick-settings popup for KDE Plasma 6, designed as a companion to [Laetum Launcher](https://github.com/PcmciaKai/Laetum-Launcher). It has the same opaque header over a translucent body, the same accent bars, and quick-toggle tiles in the spirit of the Windows 11 quick settings.
 
 It talks to the same Plasma components as the built-in system tray applets (Networks, Bluetooth, Audio Volume, Brightness and Color, Power and Battery, Notifications, Media Player), so toggling something here is the same as toggling it there.
+
+<p align="center">
+  <img src="docs/screenshot.png" alt="Laetum Control Center open on a Plasma 6 panel, on a desktop computer" width="45%">
+  &nbsp;
+  <img src="docs/screenshot-all-tiles.png" alt="Laetum Control Center with all tiles and the battery header of a laptop" width="45%">
+</p>
+<p align="center"><sub>Left: a desktop with a selection of tiles. Right: all tiles, with the battery in the header and the panel, as on a laptop.</sub></p>
 
 > **Status: 0.3.2, early version.** Controls and Notifications tabs, the Wi-Fi, Bluetooth, Sound, KDE Connect, Clipboard, Color Picker and Hotspot pages, and the removable devices and print queue cards are in. See the [Roadmap](#roadmap) for what's next.
 
@@ -81,6 +89,8 @@ plasmoidviewer -a local.laetum.controlcenter -l bottomedge -f horizontal
 ## Settings
 
 Right-click the icon → **Configure Laetum Control Center…**.
+
+![The settings dialog: panel icon, panel indicators and the tile list](docs/settings.png)
 
 | Setting | What it does |
 | --- | --- |
