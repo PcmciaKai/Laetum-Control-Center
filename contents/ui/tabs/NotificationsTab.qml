@@ -32,12 +32,20 @@ ColumnLayout {
     }
 
     // ClearExpired only removes notifications that timed out. The rest (a popup still on
-    // screen, resident or dismissed ones) are closed one by one, from the end so the rows
-    // don't shift under the loop.
+    // screen, resident or dismissed ones, finished jobs) are closed one by one, from the end.
+    // Closing the last child of a group also removes the group's row above it, so the next
+    // row to look at is the one below that point at most. Running jobs are left alone.
     function clearAll() {
         history.clear(NotificationManager.Notifications.ClearExpired);
-        for (let i = history.count - 1; i >= 0; --i) {
-            history.close(history.index(i, 0));
+        let i = history.count - 1;
+        while (i >= 0) {
+            const idx = history.index(i, 0);
+            const running = history.data(idx, NotificationManager.Notifications.TypeRole) === NotificationManager.Notifications.JobType
+                && history.data(idx, NotificationManager.Notifications.JobStateRole) !== NotificationManager.Notifications.JobStateStopped;
+            if (!running) {
+                history.close(idx);
+            }
+            i = Math.min(i - 1, history.count - 1);
         }
     }
 
@@ -77,9 +85,13 @@ ColumnLayout {
         id: history
         showExpired: true
         showDismissed: true
-        showJobs: false
+        // File copies and downloads, with their progress
+        showJobs: true
         sortMode: NotificationManager.Notifications.SortByDate
-        groupMode: NotificationManager.Notifications.GroupDisabled
+        // Grouped by app; a group shows its newest two until it's expanded, and anything unread
+        groupMode: NotificationManager.Notifications.GroupApplicationsFlat
+        groupLimit: 2
+        expandUnread: true
         ignoreBlacklistDuringInhibition: true
         blacklistedDesktopEntries: settings.historyBlacklistedApplications
         blacklistedNotifyRcNames: settings.historyBlacklistedServices
@@ -154,20 +166,92 @@ ColumnLayout {
             text: i18n("No notifications")
         }
 
-        delegate: NotificationCard {
+        // A group's header row (the app, how many, show more / fewer), or a notification or job.
+        // A group's notifications are indented under its header.
+        delegate: Loader {
+            id: row
+
+            required property var model
+            required property int index
+            readonly property bool isGroup: model.isGroup ?? false
+            readonly property bool inGroup: model.isInGroup ?? false
+
             width: list.width - (vbar.size < 1 ? vbar.width + Kirigami.Units.smallSpacing : 0)
-            now: notificationsTab.now
-            onCloseRequested: history.close(history.index(index, 0))
-            onDefaultActionRequested: {
-                history.invokeDefaultAction(history.index(index, 0), resident ? NotificationManager.Notifications.None : NotificationManager.Notifications.Close);
-                root.expanded = false;
+            sourceComponent: isGroup ? groupHeader : notificationCard
+
+            Component {
+                id: notificationCard
+
+                Item {
+                    implicitHeight: card.implicitHeight
+
+                    NotificationCard {
+                        id: card
+                        x: row.inGroup ? Kirigami.Units.largeSpacing * 2 : 0
+                        width: parent.width - x
+                        model: row.model
+                        now: notificationsTab.now
+                        onCloseRequested: history.close(history.index(row.index, 0))
+                        onDefaultActionRequested: {
+                            history.invokeDefaultAction(history.index(row.index, 0), resident ? NotificationManager.Notifications.None : NotificationManager.Notifications.Close);
+                            root.expanded = false;
+                        }
+                        onActionRequested: actionName => {
+                            history.invokeAction(history.index(row.index, 0), actionName, resident ? NotificationManager.Notifications.None : NotificationManager.Notifications.Close);
+                        }
+                        onConfigureRequested: {
+                            history.configure(history.index(row.index, 0));
+                            root.expanded = false;
+                        }
+                        onSuspendRequested: history.suspendJob(history.index(row.index, 0))
+                        onResumeRequested: history.resumeJob(history.index(row.index, 0))
+                        onKillRequested: history.killJob(history.index(row.index, 0))
+                    }
+                }
             }
-            onActionRequested: actionName => {
-                history.invokeAction(history.index(index, 0), actionName, resident ? NotificationManager.Notifications.None : NotificationManager.Notifications.Close);
-            }
-            onConfigureRequested: {
-                history.configure(history.index(index, 0));
-                root.expanded = false;
+
+            Component {
+                id: groupHeader
+
+                RowLayout {
+                    readonly property int total: row.model.groupChildrenCount ?? 0
+                    readonly property int shown: row.model.expandedGroupChildrenCount ?? 0
+                    readonly property bool expanded: row.model.isGroupExpanded ?? false
+
+                    spacing: Kirigami.Units.smallSpacing
+
+                    Kirigami.Icon {
+                        Layout.leftMargin: Kirigami.Units.smallSpacing
+                        Layout.preferredWidth: Kirigami.Units.iconSizes.small
+                        Layout.preferredHeight: Kirigami.Units.iconSizes.small
+                        source: row.model.applicationIconName ?? ""
+                        visible: source !== ""
+                    }
+                    PC3.Label {
+                        Layout.fillWidth: true
+                        text: i18ncp("App name and how many notifications it has", "%2 · %1 notification", "%2 · %1 notifications",
+                                     parent.total, row.model.applicationName ?? "")
+                        font.weight: Font.DemiBold
+                        elide: Text.ElideRight
+                        textFormat: Text.PlainText
+                    }
+                    PC3.ToolButton {
+                        visible: parent.expanded || parent.total > parent.shown
+                        text: parent.expanded ? i18n("Show fewer") : i18np("Show %1 more", "Show %1 more", parent.total - parent.shown)
+                        onClicked: history.setData(history.index(row.index, 0), !parent.expanded, NotificationManager.Notifications.IsGroupExpandedRole)
+                    }
+                    PC3.ToolButton {
+                        icon.name: "window-close-symbolic"
+                        icon.width: Kirigami.Units.iconSizes.small
+                        icon.height: Kirigami.Units.iconSizes.small
+                        display: PC3.AbstractButton.IconOnly
+                        text: i18n("Close all from %1", row.model.applicationName ?? "")
+                        onClicked: history.close(history.index(row.index, 0))
+                        PC3.ToolTip.text: text
+                        PC3.ToolTip.visible: hovered
+                        PC3.ToolTip.delay: Kirigami.Units.toolTipDelay
+                    }
+                }
             }
         }
     }

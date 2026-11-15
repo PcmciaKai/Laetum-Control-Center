@@ -35,7 +35,7 @@ plasmoidviewer -a local.laetum.controlcenter -l bottomedge -f horizontal
 - [ ] Tile labels fit on one line, and the › arrows line up with the tile icons
 - [ ] Dark Mode switches light ↔ dark and back to the original scheme or theme
 - [ ] Clipboard shows the item count; its page lists the history, clicking an entry copies it, Clear history empties it
-- [ ] KDE Connect opens its page: battery, ring / browse / send clipboard work; the remote keyboard field appears while the phone asks for it; phone notifications can be dismissed and replied to
+- [ ] KDE Connect tile shows the phone's name and battery (when the phone sends it); its page: battery, ring / browse / send files / send clipboard work, files dropped on a device are sent; the remote keyboard field appears while the phone asks for it; phone notifications can be dismissed and replied to
 - [ ] Screenshot: click closes the popup and starts Spectacle's region selection; › menu modes work
 - [ ] Hotspot: tile starts and stops it; › page shows name and password, switch works, fields are locked while it runs; hidden without a capable Wi-Fi card
 - [ ] Color Picker: clicking closes the popup and shows KWin's picker; the hex code is copied and appears on the tile and in the › page; Esc cancels
@@ -52,6 +52,9 @@ plasmoidviewer -a local.laetum.controlcenter -l bottomedge -f horizontal
 - [ ] Badge counts unread notifications and clears when the tab is opened
 - [ ] Cards show app, time, summary, body and action buttons; actions work
 - [ ] Close and Clear all also remove the notifications from the tray's history
+- [ ] Several notifications from one app are grouped under the app's name; Show more / Show fewer and the group's close button work
+- [ ] A file copy shows a progress bar with percentage and speed; Pause / Resume and Cancel work; when done, Open shows the destination
+- [ ] A notification with an attached picture (e.g. a saved screenshot) shows a thumbnail; clicking it opens the picture
 - [ ] Do Not Disturb switch follows the tile and the tray
 
 ## Pages
@@ -60,7 +63,7 @@ plasmoidviewer -a local.laetum.controlcenter -l bottomedge -f horizontal
 - [ ] Bluetooth ›: paired devices; clicking connects/disconnects; Pair device… opens the wizard
 - [ ] Microphone › and volume ›: Sound page; clicking a device makes it the default
 - [ ] The switch in a page's header turns Wi-Fi / Bluetooth on and off
-- [ ] Back and Esc return to the tabs; the popup keeps the same height
+- [ ] Pages slide in from the right and back out; Back and Esc return to the tabs; the popup keeps the same height
 
 ## Settings
 

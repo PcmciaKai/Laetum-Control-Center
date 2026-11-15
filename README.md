@@ -15,17 +15,17 @@ It talks to the same Plasma components as the built-in system tray applets (Netw
 </p>
 <p align="center"><sub>Left: a desktop with a selection of tiles. Right: all tiles, with the battery in the header and the panel, as on a laptop.</sub></p>
 
-> **Status: 0.3.2, early version.** Controls and Notifications tabs, the Wi-Fi, Bluetooth, Sound, KDE Connect, Clipboard, Color Picker and Hotspot pages, and the removable devices and print queue cards are in. See the [Roadmap](#roadmap) for what's next.
+> **Status: 0.3.2, early version.** Controls and Notifications tabs, the Wi-Fi, Bluetooth, Sound, KDE Connect, Clipboard, Color Picker and Hotspot pages, and the removable devices and print queue cards are in. Ideas and requests are welcome as [issues](../../issues).
 
 ## Features
 
 - **Two tabs** with Laetum Launcher's sliding accent indicator: **Controls** and **Notifications** (with an unread badge)
 - **Quick-toggle tiles:** Wi-Fi, Bluetooth, Night Light, Do Not Disturb, Airplane Mode, Power Mode, Microphone, KDE Connect, Keep awake, Dark Mode, Clipboard, Color Picker, Screenshot and Hotspot
   - Click a tile to toggle it; the › button opens more options
-  - Wi-Fi, Bluetooth and Microphone (and the volume slider's ›) slide in a page inside the popup: pick and connect to Wi-Fi networks (with an inline password field), connect paired Bluetooth devices or pair a new one, choose the default sound output and input
+  - Wi-Fi, Bluetooth and Microphone (and the volume slider's ›) slide in a page inside the popup (with a short slide animation): pick and connect to Wi-Fi networks (with an inline password field), connect paired Bluetooth devices or pair a new one, choose the default sound output and input
   - The other tiles' › opens the matching System Settings page
   - **Dark Mode** applies your default light or dark global theme (System Settings → Colors & Themes) if both are set, and otherwise switches the colour scheme, remembering the one you switched away from
-  - **KDE Connect** opens a page like the KDE Connect applet: each connected device's battery, ring / browse files / send clipboard, the remote keyboard field and the phone's notifications (dismiss or reply)
+  - **KDE Connect** shows the phone's battery on the tile and opens a page like the KDE Connect applet: each connected device's battery, ring / browse files / send files (or drop them on the device) / send clipboard, the remote keyboard field and the phone's notifications (dismiss or reply)
   - **Clipboard** opens Klipper's history, with thumbnails for pictures; click an entry to copy it again (needs the tray's Clipboard entry, which can be set to "Always hidden")
   - **Screenshot** takes a region screenshot with Spectacle (with your Spectacle settings, like the Print key); › offers full screen, active window, screen recording and opening Spectacle
   - **Hotspot** shares this computer's connection over Wi-Fi; › shows and edits the network name and password (a random password is created if none is set)
@@ -33,7 +33,7 @@ It talks to the same Plasma components as the built-in system tray applets (Netw
   - Tiles for hardware you don't have (e.g. Wi-Fi on a desktop) hide themselves
   - Choose which tiles appear and their order in the settings
 - **Volume and brightness sliders**, one brightness slider per display that supports it (laptop panels and DDC/CI monitors)
-- **Notifications tab:** your notification history as cards, with their action buttons, Close, notification settings, Do Not Disturb and Clear all. It uses the same history as Plasma's Notifications applet, so reading or closing a notification here does the same there
+- **Notifications tab:** your notification history as cards, with their action buttons, Close, notification settings, Do Not Disturb and Clear all. Notifications are grouped by app (Show more / Show fewer), file copies and downloads show their progress with Pause, Cancel and Open, and attached pictures such as a saved screenshot get a thumbnail. It uses the same history as Plasma's Notifications applet, so reading or closing a notification here does the same there
 - **Now playing card** for the current MPRIS player, with previous / play-pause / next and a progress bar; click it to raise the player
 - **Removable devices card** while a USB stick, SD card, external disk or disc is plugged in: free space, click to open it, eject to safely remove it
 - **Print queue card** while something is printing, with a cancel button per job
@@ -114,9 +114,7 @@ This widget uses some of Plasma's **private** QML modules (the same ones the tra
 
 ## Roadmap
 
-- Notifications: group by app, job progress (file copies), screenshot thumbnails
-- KDE Connect: phone battery on the tile, sharing a file
-- Slide animation when opening and closing pages
+Everything from the earlier roadmap is in. Ideas and requests are welcome as [issues](../../issues).
 
 ## AI Disclosure
 

@@ -15,6 +15,11 @@ QtObject {
         let unread = 0;
         for (let i = 0; i < model.count; ++i) {
             const idx = model.index(i, 0);
+            // A group's header row and file jobs aren't notifications to read
+            if (model.data(idx, NotificationManager.Notifications.IsGroupRole)
+                    || model.data(idx, NotificationManager.Notifications.TypeRole) === NotificationManager.Notifications.JobType) {
+                continue;
+            }
             if (!model.data(idx, NotificationManager.Notifications.ReadRole)
                     && !model.data(idx, NotificationManager.Notifications.DismissedRole)) {
                 ++unread;

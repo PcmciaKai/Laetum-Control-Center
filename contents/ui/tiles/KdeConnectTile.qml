@@ -20,7 +20,14 @@ Tile {
             return i18n("Not connected");
         }
         if (reachableCount === 1) {
-            return firstName.first ? firstName.first.name : i18n("Connected");
+            const first = firstDevice.first;
+            if (!first) {
+                return i18n("Connected");
+            }
+            // With the phone's battery, when KDE Connect knows it
+            return first.charge > -1
+                ? i18nc("Device name · battery percentage", "%1 · %2%", first.name, first.charge)
+                : first.name;
         }
         return i18ncp("Number of connected devices", "%1 connected", "%1 connected", reachableCount);
     }
@@ -38,13 +45,23 @@ Tile {
         displayFilter: KDEConnect.DevicesModel.Paired | KDEConnect.DevicesModel.Reachable
     }
 
-    // The name of the first connected device
+    // The name and battery of the first connected device
     Instantiator {
-        id: firstName
+        id: firstDevice
         readonly property QtObject first: count > 0 ? objectAt(0) : null
         model: reachable
         delegate: QtObject {
+            id: device
             required property string name
+            required property string deviceId
+
+            readonly property KDEConnect.DeviceDbusInterface iface: KDEConnect.DeviceDbusInterfaceFactory.create(deviceId)
+            readonly property KDEConnect.PluginChecker batteryPlugin: KDEConnect.PluginChecker {
+                pluginName: "battery"
+                device: device.iface
+            }
+            readonly property var battery: batteryPlugin.available ? KDEConnect.DeviceBatteryDbusInterfaceFactory.create(deviceId) : null
+            readonly property int charge: (battery?.hasBattery ?? false) ? (battery?.charge ?? -1) : -1
         }
     }
 }

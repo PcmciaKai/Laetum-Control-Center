@@ -48,6 +48,8 @@ FocusScope {
 
     // ---- Drill-in pages ----
     property string page: ""
+    // The page in the loader: stays set while a closing page slides out
+    property string loadedPage: ""
     readonly property var pageFiles: ({
         "wifi": "pages/WifiPage.qml",
         "bluetooth": "pages/BluetoothPage.qml",
@@ -75,8 +77,10 @@ FocusScope {
             return;
         }
         page = name;
+        loadedPage = name;
         if (pageLoader.status === Loader.Error) {
             page = "";
+            loadedPage = "";
             if (pageFallbackKcm[name]) {
                 root.openKcm(pageFallbackKcm[name]);
             }
@@ -113,8 +117,27 @@ FocusScope {
         }
     }
 
+    // 0 = tabs, 1 = page; slides between them. Instant when the popup opens.
+    property bool animatePages: false
+    property real slide: pageOpen ? 1 : 0
+    Behavior on slide {
+        enabled: panel.animatePages
+        NumberAnimation {
+            duration: Kirigami.Units.longDuration
+            easing.type: Easing.OutCubic
+        }
+    }
+    onSlideChanged: {
+        if (slide === 0 && page === "") {
+            loadedPage = "";
+        }
+    }
+
     function reset() {
+        animatePages = false;
         page = "";
+        loadedPage = "";
+        Qt.callLater(() => panel.animatePages = true);
         currentTab = "controls";
         panel.forceActiveFocus();
     }
@@ -369,17 +392,25 @@ FocusScope {
         }
 
         // ---- Body ----
-        StackLayout {
+        // The tabs slide a little to the left and fade as a page slides in from the right
+        Item {
             id: body
             Layout.fillWidth: true
             Layout.preferredHeight: panel.bodyHeight
             Layout.leftMargin: panel.pad
             Layout.rightMargin: panel.pad
             Layout.topMargin: tabList.visible ? Kirigami.Units.smallSpacing : panel.pad
-            currentIndex: panel.pageOpen ? 1 : 0
+            clip: panel.slide > 0 && panel.slide < 1
+
+            readonly property real travel: width * 0.3
 
             StackLayout {
                 id: tabStack
+                width: body.width
+                height: body.height
+                x: -panel.slide * body.travel
+                opacity: 1 - panel.slide
+                visible: panel.slide < 1 || !panel.pageOpen
                 currentIndex: ["controls", "notifications"].indexOf(panel.effectiveTab)
 
                 Loader {
@@ -395,7 +426,13 @@ FocusScope {
 
             Loader {
                 id: pageLoader
-                source: panel.page !== "" ? (panel.pageFiles[panel.page] ?? "") : ""
+                width: body.width
+                height: body.height
+                x: (1 - panel.slide) * body.travel
+                opacity: panel.slide
+                // Visible from the start of the slide, so the page can take keyboard focus
+                visible: panel.slide > 0 || panel.pageOpen
+                source: panel.loadedPage !== "" ? (panel.pageFiles[panel.loadedPage] ?? "") : ""
             }
         }
 
@@ -403,7 +440,7 @@ FocusScope {
         Binding {
             target: notificationsLoader.item
             property: "current"
-            value: root.expanded && body.currentIndex === 0 && panel.effectiveTab === "notifications"
+            value: root.expanded && !panel.pageOpen && panel.effectiveTab === "notifications"
             when: notificationsLoader.status === Loader.Ready
         }
 
