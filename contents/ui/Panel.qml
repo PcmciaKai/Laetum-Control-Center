@@ -57,7 +57,9 @@ FocusScope {
         "clipboard": "pages/ClipboardPage.qml",
         "colors": "pages/ColorsPage.qml",
         "kdeconnect": "pages/KdeConnectPage.qml",
-        "hotspot": "pages/HotspotPage.qml"
+        "hotspot": "pages/HotspotPage.qml",
+        "nightlight": "pages/NightLightPage.qml",
+        "vpn": "pages/VpnPage.qml"
     })
     // Where a tile's › goes if its page can't load (e.g. an older Plasma)
     readonly property var pageFallbackKcm: ({
@@ -67,7 +69,9 @@ FocusScope {
         "clipboard": "",
         "colors": "",
         "kdeconnect": "",
-        "hotspot": "kcm_networkmanagement"
+        "hotspot": "kcm_networkmanagement",
+        "nightlight": "kcm_nightlight",
+        "vpn": "kcm_networkmanagement"
     })
     readonly property bool pageOpen: page !== "" && pageLoader.status === Loader.Ready
     readonly property var pageItem: pageOpen ? pageLoader.item : null

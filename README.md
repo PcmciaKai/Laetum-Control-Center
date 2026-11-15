@@ -15,20 +15,22 @@ It talks to the same Plasma components as the built-in system tray applets (Netw
 </p>
 <p align="center"><sub>Left: a desktop with a selection of tiles. Right: all tiles, with the battery in the header and the panel, as on a laptop.</sub></p>
 
-> **Status: 0.3.2, early version.** Controls and Notifications tabs, the Wi-Fi, Bluetooth, Sound, KDE Connect, Clipboard, Color Picker and Hotspot pages, and the removable devices and print queue cards are in. Ideas and requests are welcome as [issues](../../issues).
+> **Status: 0.4.0, early version.** Controls and Notifications tabs, the Wi-Fi, Bluetooth, Sound (with per-app volume), Night Light, VPN, KDE Connect, Clipboard, Color Picker and Hotspot pages, and the removable devices and print queue cards are in. Ideas and requests are welcome as [issues](../../issues).
 
 ## Features
 
 - **Two tabs** with Laetum Launcher's sliding accent indicator: **Controls** and **Notifications** (with an unread badge)
-- **Quick-toggle tiles:** Wi-Fi, Bluetooth, Night Light, Do Not Disturb, Airplane Mode, Power Mode, Microphone, KDE Connect, Keep awake, Dark Mode, Clipboard, Color Picker, Screenshot and Hotspot
+- **Quick-toggle tiles:** Wi-Fi, Bluetooth, Night Light, Do Not Disturb, Airplane Mode, Power Mode, Microphone, KDE Connect, Keep awake, Dark Mode, Clipboard, Color Picker, Screenshot, Hotspot and VPN
   - Click a tile to toggle it; the › button opens more options
-  - Wi-Fi, Bluetooth and Microphone (and the volume slider's ›) slide in a page inside the popup (with a short slide animation): pick and connect to Wi-Fi networks (with an inline password field), connect paired Bluetooth devices or pair a new one, choose the default sound output and input
+  - Wi-Fi, Bluetooth and Microphone (and the volume slider's ›) slide in a page inside the popup (with a short slide animation): pick and connect to Wi-Fi networks (with an inline password field), connect paired Bluetooth devices or pair a new one, choose the default sound output and input and set each app's volume (click an app's icon to mute it)
+  - **Night Light** pauses and resumes on click; › has Pause for an hour, Pause until tomorrow morning, the night colour temperature (shown live while you drag) and an on/off switch
   - The other tiles' › opens the matching System Settings page
   - **Dark Mode** applies your default light or dark global theme (System Settings → Colors & Themes) if both are set, and otherwise switches the colour scheme, remembering the one you switched away from
   - **KDE Connect** shows the phone's battery on the tile and opens a page like the KDE Connect applet: each connected device's battery, ring / browse files / send files (or drop them on the device) / send clipboard, the remote keyboard field and the phone's notifications (dismiss or reply)
   - **Clipboard** opens Klipper's history, with thumbnails for pictures; click an entry to copy it again (needs the tray's Clipboard entry, which can be set to "Always hidden")
   - **Screenshot** takes a region screenshot with Spectacle (with your Spectacle settings, like the Print key); › offers full screen, active window, screen recording and opening Spectacle
   - **Hotspot** shares this computer's connection over Wi-Fi; › shows and edits the network name and password (a random password is created if none is set)
+  - **VPN** connects and disconnects the VPN connections set up in the network settings (OpenVPN, WireGuard, …): with one, a click toggles it; › lists them all and warns when IPv6 traffic goes around the VPN (a common leak with OpenVPN configuration files)
   - **Color Picker** picks a colour from the screen and copies its hex code; › shows the picked colours
   - Tiles for hardware you don't have (e.g. Wi-Fi on a desktop) hide themselves
   - Choose which tiles appear and their order in the settings
@@ -50,13 +52,13 @@ Each tile and row loads on its own, so a missing component only hides that part:
 
 | Part | Comes from |
 | --- | --- |
-| Wi-Fi, Airplane Mode, network indicator | `plasma-nm` |
+| Wi-Fi, Airplane Mode, Hotspot, VPN, network indicator | `plasma-nm` (VPNs also need the NetworkManager plugin for their type, e.g. `NetworkManager-openvpn`) |
 | Bluetooth | `bluedevil` |
 | Volume, Microphone | `plasma-pa` |
-| Brightness, Night Light, Power Mode, Keep awake | `powerdevil` (Power profiles also need `power-profiles-daemon` or `tuned-ppd`) |
+| Brightness, Night Light, Power Mode, Keep awake | `powerdevil` and KWin (Power profiles also need `power-profiles-daemon` or `tuned-ppd`) |
 | Battery | `plasma-workspace` |
-| Do Not Disturb, Notifications tab, notification bell | Plasma's Notifications applet (the one in the system tray) |
-| Clipboard | Klipper (part of `plasma-workspace`) |
+| Do Not Disturb, Notifications tab, notification bell | Plasma's Notifications applet (the tray's Notifications entry; keep it enabled, see [below](#system-tray-entries-hide-dont-disable)) |
+| Clipboard | Klipper (part of `plasma-workspace`; the tray's Clipboard entry must stay enabled, see [below](#system-tray-entries-hide-dont-disable)) |
 | Color Picker | KWin |
 | Removable devices | `plasma-workspace` and `udisks2` |
 | Print queue | `print-manager` |
@@ -67,7 +69,7 @@ Each tile and row loads on its own, so a missing component only hides that part:
 Download `laetum-control-center-<version>.plasmoid` from the [Releases](../../releases) page, then:
 
 ```bash
-kpackagetool6 -t Plasma/Applet -i laetum-control-center-0.3.2.plasmoid
+kpackagetool6 -t Plasma/Applet -i laetum-control-center-0.4.0.plasmoid
 ```
 
 Or from a checkout of this repository:
@@ -78,7 +80,18 @@ kpackagetool6 -t Plasma/Applet -i .
 
 To update an existing install, use `-u` instead of `-i`. Plasma caches QML, so after updating run `plasmashell --replace &` (or log out and back in) if you don't see your changes.
 
-Then right-click the panel → **Add Widgets…** → **Laetum Control Center**. It works well next to (or instead of) the system tray; you can hide the tray entries it replaces in the tray's own settings.
+Then right-click the panel → **Add Widgets…** → **Laetum Control Center**. It works well next to the system tray; you can hide the tray entries it replaces in the tray's own settings (see below).
+
+### System tray entries: hide, don't disable
+
+Most of the tray entries the control center replaces can be hidden or disabled freely. Two of them must stay **enabled**, because they run parts of Plasma that the control center relies on. Set them to **Always hidden** instead of **Disabled** (right-click the tray → **Configure System Tray…** → **Entries**):
+
+| Tray entry | What breaks when it's disabled |
+| --- | --- |
+| **Notifications** | Do Not Disturb (tile, switch and the crossed-out bell), notification popups, and the Notifications tab's history: the notification server lives in this entry |
+| **Clipboard** | The Clipboard tile and page, and copying from the Color Picker and Hotspot pages into the clipboard history: Klipper only runs while this entry is enabled |
+
+Because of this, keep the system tray in your panel, even if every entry in it is hidden.
 
 To try it in a window without touching your panel:
 

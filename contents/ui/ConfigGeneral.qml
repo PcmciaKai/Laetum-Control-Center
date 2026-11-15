@@ -69,7 +69,8 @@ KCM.SimpleKCM {
         { id: "clipboard", name: i18n("Clipboard"), icon: "klipper-symbolic" },
         { id: "colorpicker", name: i18n("Color Picker"), icon: "color-picker-symbolic" },
         { id: "screenshot", name: i18n("Screenshot"), icon: "camera-photo-symbolic" },
-        { id: "hotspot", name: i18n("Hotspot"), icon: "network-wireless-hotspot-symbolic" }
+        { id: "hotspot", name: i18n("Hotspot"), icon: "network-wireless-hotspot-symbolic" },
+        { id: "vpn", name: i18n("VPN"), icon: "network-vpn-symbolic" }
     ]
     readonly property var enabledTiles: Array.from(cfg_tiles).filter(id => allTiles.some(t => t.id === id))
     // Shown tiles first, in their order, then the hidden ones

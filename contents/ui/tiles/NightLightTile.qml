@@ -1,58 +1,44 @@
 import QtQuick
-import org.kde.plasma.private.brightnesscontrolplugin
-import org.kde.plasma.workspace.dbus as DBus
 import ".."
 
 Tile {
     id: tile
 
-    available: nightLight.available
-    checked: nightLight.enabled && !nightLight.inhibited
+    readonly property var nightLight: root.nightLight
+
+    available: nightLight !== null && nightLight.available
+    checked: nightLight !== null && nightLight.active
     iconName: checked ? "redshift-status-on" : "redshift-status-off"
     label: i18n("Night Light")
     status: {
-        if (!nightLight.enabled) {
+        if (!nightLight || !nightLight.enabled) {
             return i18n("Off");
         }
         if (nightLight.inhibited) {
-            return nightLight.inhibitedFromApplet ? i18n("Paused") : i18n("Paused by an app");
+            if (!nightLight.pausedHere) {
+                return i18n("Paused by an app");
+            }
+            return nightLight.resumeAt > 0
+                ? i18nc("Night Light is paused until a time", "Paused until %1", Qt.formatTime(new Date(nightLight.resumeAt), Qt.locale().timeFormat(Locale.ShortFormat)))
+                : i18n("Paused");
         }
-        if (nightLight.daylight && nightLight.hasSwitchingTimes && nightLight.scheduledTransitionStartTime > 0) {
+        if (nightLight.daylight && nightLight.hasSwitchingTimes && nightLight.scheduledTransition > 0) {
             return i18nc("Night Light starts at a time", "From %1",
-                Qt.formatTime(new Date(nightLight.scheduledTransitionStartTime), Qt.locale().timeFormat(Locale.ShortFormat)));
+                Qt.formatTime(new Date(nightLight.scheduledTransition), Qt.locale().timeFormat(Locale.ShortFormat)));
         }
         return i18nc("Colour temperature", "On · %1 K", nightLight.currentTemperature);
     }
     hasDetails: true
-    detailsTooltip: i18n("Night Light settings")
+    detailsTooltip: i18n("Pause, temperature and more")
 
-    // Night Light is switched on and off in its settings; the tile pauses and resumes it,
-    // like the Brightness and Color applet does
+    // Switched off: switch it on. Otherwise pause and resume, like the Brightness and Color
+    // applet does; › has the timed pauses and the temperature
     onActivated: {
         if (!nightLight.enabled) {
-            root.openKcm("kcm_nightlight");
-        } else if (nightLight.togglable) {
-            NightLightInhibitor.toggleInhibition();
+            nightLight.setEnabled(true);
+        } else {
+            nightLight.togglePause();
         }
     }
-    onDetailsRequested: root.openKcm("kcm_nightlight")
-
-    DBus.Properties {
-        id: nightLight
-        busType: DBus.BusType.Session
-        service: "org.kde.KWin.NightLight"
-        path: "/org/kde/KWin/NightLight"
-        iface: "org.kde.KWin.NightLight"
-
-        readonly property bool available: Boolean(properties.available)
-        readonly property bool enabled: Boolean(properties.enabled)
-        readonly property bool inhibited: Boolean(properties.inhibited)
-        readonly property bool inhibitedFromApplet: NightLightInhibitor.inhibited
-        readonly property int mode: Number(properties.mode)
-        readonly property bool daylight: Boolean(properties.daylight)
-        readonly property int currentTemperature: Number(properties.currentTemperature)
-        readonly property double scheduledTransitionStartTime: Number(properties.scheduledTransitionDateTime) * 1000
-        readonly property bool hasSwitchingTimes: mode !== 3
-        readonly property bool togglable: !inhibited || inhibitedFromApplet
-    }
+    onDetailsRequested: root.pageRequested("nightlight")
 }

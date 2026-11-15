@@ -66,6 +66,14 @@ PlasmoidItem {
     // Tiles ask the popup to slide in one of the pages in pages/ ("wifi", "bluetooth", "audio", ...)
     signal pageRequested(string page)
 
+    // Night Light, shared by its tile and page. Loaded on its own, so a missing Plasma
+    // component only hides the Night Light tile.
+    readonly property var nightLight: nightLightLoader.status === Loader.Ready ? nightLightLoader.item : null
+    Loader {
+        id: nightLightLoader
+        source: "NightLightControl.qml"
+    }
+
     // Through Klipper, so it works with the popup closed and lands in the clipboard history.
     // Without Klipper (the tray's Clipboard entry turned off) through Qt's clipboard instead.
     function copyText(text) {

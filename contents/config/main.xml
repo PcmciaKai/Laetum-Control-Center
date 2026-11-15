@@ -23,7 +23,7 @@
 
     <!-- Popup -->
     <entry name="tiles" type="StringList">
-      <default>wifi,bluetooth,nightlight,dnd,airplane,powerprofile,microphone,kdeconnect,keepawake,darkmode,clipboard,colorpicker,screenshot,hotspot</default>
+      <default>wifi,bluetooth,nightlight,dnd,airplane,powerprofile,microphone,kdeconnect,keepawake,darkmode,clipboard,colorpicker,screenshot,hotspot,vpn</default>
     </entry>
     <entry name="showSliders" type="Bool">
       <default>true</default>

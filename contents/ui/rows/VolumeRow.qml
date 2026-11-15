@@ -60,7 +60,7 @@ RowLayout {
         // Same arrow size as on the tiles
         icon.width: Kirigami.Units.iconSizes.small
         icon.height: Kirigami.Units.iconSizes.small
-        text: i18n("Audio devices")
+        text: i18n("Sound devices and apps")
         onClicked: root.pageRequested("audio")
 
         PC3.ToolTip.text: text

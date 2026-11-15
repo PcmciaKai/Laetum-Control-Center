@@ -4,8 +4,10 @@ import org.kde.plasma.components as PC3
 import org.kde.kirigami as Kirigami
 import org.kde.plasma.private.volume
 import ".."
+import "../rows"
 
-// Choose the default output and input device, like the Audio Volume applet's Devices tab
+// Choose the default output and input device, and each app's volume, like the Audio Volume
+// applet's Devices and Applications tabs
 ColumnLayout {
     id: page
 
@@ -32,6 +34,13 @@ ColumnLayout {
         sourceModel: SinkModel {}
     }
 
+    // Apps playing sound; virtual streams (e.g. event sounds) are left out, like the applet does
+    PulseObjectFilterModel {
+        id: apps
+        filters: [{ role: "VirtualStream", value: false }]
+        sourceModel: SinkInputModel {}
+    }
+
     PulseObjectFilterModel {
         id: inputs
         filterOutInactiveDevices: true
@@ -45,6 +54,8 @@ ColumnLayout {
         Layout.fillHeight: true
 
         contentWidth: availableWidth
+        // Wrapped text reports its unwrapped width; never scroll sideways
+        PC3.ScrollBar.horizontal.policy: PC3.ScrollBar.AlwaysOff
 
         ColumnLayout {
             width: scroll.availableWidth
@@ -78,6 +89,39 @@ ColumnLayout {
                         visible: outputRow.active
                         source: "checkmark-symbolic"
                     }
+                }
+            }
+
+            PC3.Label {
+                Layout.topMargin: Kirigami.Units.largeSpacing
+                Layout.leftMargin: Kirigami.Units.smallSpacing
+                Layout.bottomMargin: Kirigami.Units.smallSpacing
+                text: i18n("Apps")
+                font: Kirigami.Theme.smallFont
+                opacity: 0.7
+            }
+
+            // Always shown, so the per-app volume can be found before anything plays
+            PC3.Label {
+                Layout.fillWidth: true
+                Layout.leftMargin: Kirigami.Units.smallSpacing
+                Layout.bottomMargin: Kirigami.Units.smallSpacing
+                Layout.preferredWidth: 0
+                visible: apps.count === 0
+                text: i18n("No apps are playing sound. Apps appear here with their own volume while they play.")
+                wrapMode: Text.WordWrap
+                font: Kirigami.Theme.smallFont
+                opacity: 0.5
+            }
+
+            Repeater {
+                model: apps
+
+                delegate: AppVolumeRow {
+                    required property var model
+                    Layout.fillWidth: true
+                    Layout.bottomMargin: Kirigami.Units.smallSpacing
+                    stream: model.PulseObject
                 }
             }
 

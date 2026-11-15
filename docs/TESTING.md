@@ -37,6 +37,8 @@ plasmoidviewer -a local.laetum.controlcenter -l bottomedge -f horizontal
 - [ ] Clipboard shows the item count; its page lists the history, clicking an entry copies it, Clear history empties it
 - [ ] KDE Connect tile shows the phone's name and battery (when the phone sends it); its page: battery, ring / browse / send files / send clipboard work, files dropped on a device are sent; the remote keyboard field appears while the phone asks for it; phone notifications can be dismissed and replied to
 - [ ] Screenshot: click closes the popup and starts Spectacle's region selection; › menu modes work
+- [ ] Night Light: click pauses and resumes; › page: Pause for an hour / until tomorrow morning show the time on the tile and resume by themselves, Resume now works, the temperature slider shows the colour while dragging and is kept after release, the header switch turns Night Light off and on
+- [ ] VPN: without VPNs the tile says Not set up and › shows Add a VPN…; with one VPN a click connects and disconnects it; with several, › lists them and clicking one toggles it; with a VPN that only carries IPv4 on a network with IPv6, the page shows the IPv6 warning
 - [ ] Hotspot: tile starts and stops it; › page shows name and password, switch works, fields are locked while it runs; hidden without a capable Wi-Fi card
 - [ ] Color Picker: clicking closes the popup and shows KWin's picker; the hex code is copied and appears on the tile and in the › page; Esc cancels
 - [ ] Tiles for missing hardware are hidden
@@ -61,7 +63,7 @@ plasmoidviewer -a local.laetum.controlcenter -l bottomedge -f horizontal
 
 - [ ] Wi-Fi ›: list of networks, connected one tinted; Disconnect works; a saved network connects; a new WPA network asks for the password inline; Esc in the field cancels
 - [ ] Bluetooth ›: paired devices; clicking connects/disconnects; Pair device… opens the wizard
-- [ ] Microphone › and volume ›: Sound page; clicking a device makes it the default
+- [ ] Microphone › and volume ›: Sound page; clicking a device makes it the default; apps playing sound are listed under Apps (with a note when none is playing) with their own slider, and clicking an app's icon mutes it
 - [ ] The switch in a page's header turns Wi-Fi / Bluetooth on and off
 - [ ] Pages slide in from the right and back out; Back and Esc return to the tabs; the popup keeps the same height
 
