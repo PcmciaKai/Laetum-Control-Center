@@ -21,7 +21,9 @@ Item {
         "keepawake": "KeepAwakeTile.qml",
         "darkmode": "DarkModeTile.qml",
         "clipboard": "ClipboardTile.qml",
-        "colorpicker": "ColorPickerTile.qml"
+        "colorpicker": "ColorPickerTile.qml",
+        "screenshot": "ScreenshotTile.qml",
+        "hotspot": "HotspotTile.qml"
     })
 
     // The tab area can be taller than this (when a page needs more room); the content stays

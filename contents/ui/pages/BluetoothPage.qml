@@ -45,7 +45,8 @@ ColumnLayout {
     PlasmaBt.DevicesProxyModel {
         id: devicesModel
         hideBlockedDevices: true
-        sourceModel: PlasmaBt.SharedDevicesStateProxyModel
+        // Set once rather than bound: the binding reports a (harmless) loop
+        Component.onCompleted: sourceModel = PlasmaBt.SharedDevicesStateProxyModel
     }
 
     ListView {

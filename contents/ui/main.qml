@@ -137,11 +137,6 @@ PlasmoidItem {
         })
     }
 
-    function openConfiguration() {
-        Plasmoid.internalAction("configure").trigger();
-        root.expanded = false;
-    }
-
     onExpandedChanged: {
         if (root.expanded) {
             refreshAccent();

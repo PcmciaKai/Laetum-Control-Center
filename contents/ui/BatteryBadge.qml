@@ -63,40 +63,52 @@ RowLayout {
             }
         }
 
-        Kirigami.Icon {
+        // The charge, inside the ring
+        PC3.Label {
             anchors.centerIn: parent
-            width: Kirigami.Units.iconSizes.small
-            height: width
-            source: {
-                const level = Math.max(0, Math.min(100, Math.round(badge.percent / 10) * 10));
-                return "battery-" + String(level).padStart(3, "0") + (badge.charging ? "-charging" : "") + "-symbolic";
-            }
+            width: parent.width - ring.stroke * 4
+            horizontalAlignment: Text.AlignHCenter
+            text: i18nc("Battery charge percentage", "%1%", badge.percent)
+            font.pointSize: Kirigami.Theme.smallFont.pointSize
+            font.weight: Font.DemiBold
+            fontSizeMode: Text.HorizontalFit
+            minimumPointSize: Kirigami.Theme.smallFont.pointSize * 0.7
         }
     }
 
+    // Whether it's plugged in and charging, and the time left
     ColumnLayout {
         Layout.fillWidth: true
         spacing: 0
 
         PC3.Label {
             Layout.fillWidth: true
-            text: i18nc("Battery charge percentage", "%1%", badge.percent)
-            font.pointSize: Kirigami.Theme.defaultFont.pointSize * 1.25
+            text: {
+                switch (battery.state) {
+                case BatteryControlModel.Charging:
+                    return i18n("Plugged in, charging");
+                case BatteryControlModel.FullyCharged:
+                    return i18n("Plugged in, fully charged");
+                default:
+                    return battery.pluggedIn ? i18n("Plugged in, not charging") : i18n("On battery");
+                }
+            }
             elide: Text.ElideRight
         }
         PC3.Label {
             Layout.fillWidth: true
             text: {
-                const time = badge.remaining > 0 ? KCoreAddons.Format.formatDuration(badge.remaining, KCoreAddons.FormatTypes.HideSeconds) : "";
+                if (badge.remaining <= 0) {
+                    return "";
+                }
+                const time = KCoreAddons.Format.formatDuration(badge.remaining, KCoreAddons.FormatTypes.HideSeconds);
                 switch (battery.state) {
                 case BatteryControlModel.Charging:
-                    return time ? i18nc("Time until the battery is full", "%1 until full", time) : i18n("Charging");
+                    return i18nc("Time until the battery is full", "%1 until full", time);
                 case BatteryControlModel.Discharging:
-                    return time ? i18nc("Battery time left", "%1 remaining", time) : i18n("On battery");
-                case BatteryControlModel.FullyCharged:
-                    return i18n("Fully charged");
+                    return i18nc("Battery time left", "%1 remaining", time);
                 default:
-                    return battery.pluggedIn ? i18n("Plugged in, not charging") : "";
+                    return "";
                 }
             }
             visible: text !== ""

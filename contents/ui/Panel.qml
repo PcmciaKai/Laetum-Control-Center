@@ -9,7 +9,7 @@ import org.kde.kirigami as Kirigami
 import org.kde.kcmutils as KCMUtils
 
 // The popup, in Laetum Launcher's design language:
-//   opaque header band (battery or date + buttons, or Back + page title on a drill-in page)
+//   opaque header band (battery + buttons, or Back + page title on a drill-in page)
 //   hairline with the sliding accent tab indicator: Controls · Notifications
 //   body: the current tab or a drill-in page
 // Tabs and pages are each loaded on their own, so a broken or missing Plasma component
@@ -54,7 +54,8 @@ FocusScope {
         "audio": "pages/AudioPage.qml",
         "clipboard": "pages/ClipboardPage.qml",
         "colors": "pages/ColorsPage.qml",
-        "kdeconnect": "pages/KdeConnectPage.qml"
+        "kdeconnect": "pages/KdeConnectPage.qml",
+        "hotspot": "pages/HotspotPage.qml"
     })
     // Where a tile's › goes if its page can't load (e.g. an older Plasma)
     readonly property var pageFallbackKcm: ({
@@ -63,7 +64,8 @@ FocusScope {
         "audio": "kcm_pulseaudio",
         "clipboard": "",
         "colors": "",
-        "kdeconnect": ""
+        "kdeconnect": "",
+        "hotspot": "kcm_networkmanagement"
     })
     readonly property bool pageOpen: page !== "" && pageLoader.status === Loader.Ready
     readonly property var pageItem: pageOpen ? pageLoader.item : null
@@ -148,16 +150,6 @@ FocusScope {
         id: session
     }
 
-    // Clock for the header on computers without a battery
-    property date now: new Date()
-    Timer {
-        interval: 10000
-        repeat: true
-        running: root.expanded
-        triggeredOnStart: true
-        onTriggered: panel.now = new Date()
-    }
-
     ColumnLayout {
         id: column
         anchors.fill: parent
@@ -184,7 +176,7 @@ FocusScope {
                 corners.bottomRightRadius: 0
             }
 
-            // Home: battery ring (laptops) or the date, plus Edit, System Settings and Power
+            // Home: battery ring (laptops only), plus System Settings and Power
             RowLayout {
                 id: homeHeader
                 anchors.fill: parent
@@ -201,56 +193,15 @@ FocusScope {
                     source: "BatteryBadge.qml"
                 }
 
-                // Without a battery: today's date where the charge ring would be
-                RowLayout {
+                // Without a battery the header only has the buttons, on the right
+                Item {
                     Layout.fillWidth: true
                     visible: !batteryBadge.shown
-                    spacing: Kirigami.Units.largeSpacing
-
-                    Rectangle {
-                        Layout.preferredWidth: Kirigami.Units.gridUnit * 2.5
-                        Layout.preferredHeight: Layout.preferredWidth
-                        radius: width / 2
-                        color: "transparent"
-                        border.width: 3
-                        border.color: root.accentColor
-
-                        PC3.Label {
-                            anchors.centerIn: parent
-                            text: panel.now.getDate()
-                            font.weight: Font.DemiBold
-                        }
-                    }
-
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        spacing: 0
-
-                        PC3.Label {
-                            Layout.fillWidth: true
-                            text: panel.now.toLocaleTimeString(Qt.locale(), Locale.ShortFormat)
-                            font.pointSize: Kirigami.Theme.defaultFont.pointSize * 1.25
-                            elide: Text.ElideRight
-                        }
-                        PC3.Label {
-                            Layout.fillWidth: true
-                            text: panel.now.toLocaleDateString(Qt.locale(), Locale.LongFormat)
-                            font: Kirigami.Theme.smallFont
-                            opacity: 0.7
-                            elide: Text.ElideRight
-                        }
-                    }
                 }
 
                 RowLayout {
                     spacing: Math.round(panel.headerIconSize * 0.5)
 
-                    HeaderButton {
-                        iconSize: panel.headerIconSize
-                        iconName: "document-edit-symbolic"
-                        tooltip: i18n("Edit tiles")
-                        onClicked: root.openConfiguration()
-                    }
                     HeaderButton {
                         iconSize: panel.headerIconSize
                         iconName: "configure-symbolic"

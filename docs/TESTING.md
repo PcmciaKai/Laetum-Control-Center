@@ -23,8 +23,8 @@ plasmoidviewer -a local.laetum.controlcenter -l bottomedge -f horizontal
 
 ## Header
 
-- [ ] Laptop: charge ring and time left; desktop: day ring, time and date
-- [ ] Pencil opens the settings, the sliders button opens System Settings, Power opens the session menu
+- [ ] Laptop: percentage inside the ring, plugged in/charging state and time left next to it; desktop: no ring, just the buttons on the right
+- [ ] The sliders button opens System Settings, Power opens the session menu
 
 ## Controls tab
 
@@ -36,6 +36,8 @@ plasmoidviewer -a local.laetum.controlcenter -l bottomedge -f horizontal
 - [ ] Dark Mode switches light ↔ dark and back to the original scheme or theme
 - [ ] Clipboard shows the item count; its page lists the history, clicking an entry copies it, Clear history empties it
 - [ ] KDE Connect opens its page: battery, ring / browse / send clipboard work; the remote keyboard field appears while the phone asks for it; phone notifications can be dismissed and replied to
+- [ ] Screenshot: click closes the popup and starts Spectacle's region selection; › menu modes work
+- [ ] Hotspot: tile starts and stops it; › page shows name and password, switch works, fields are locked while it runs; hidden without a capable Wi-Fi card
 - [ ] Color Picker: clicking closes the popup and shows KWin's picker; the hex code is copied and appears on the tile and in the › page; Esc cancels
 - [ ] Tiles for missing hardware are hidden
 - [ ] Volume slider, mute button and the number stay in sync with the tray's volume

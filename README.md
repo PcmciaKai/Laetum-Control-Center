@@ -12,13 +12,15 @@ It talks to the same Plasma components as the built-in system tray applets (Netw
 ## Features
 
 - **Two tabs** with Laetum Launcher's sliding accent indicator: **Controls** and **Notifications** (with an unread badge)
-- **Quick-toggle tiles:** Wi-Fi, Bluetooth, Night Light, Do Not Disturb, Airplane Mode, Power Mode, Microphone, KDE Connect, Keep awake, Dark Mode, Clipboard and Color Picker
+- **Quick-toggle tiles:** Wi-Fi, Bluetooth, Night Light, Do Not Disturb, Airplane Mode, Power Mode, Microphone, KDE Connect, Keep awake, Dark Mode, Clipboard, Color Picker, Screenshot and Hotspot
   - Click a tile to toggle it; the › button opens more options
   - Wi-Fi, Bluetooth and Microphone (and the volume slider's ›) slide in a page inside the popup: pick and connect to Wi-Fi networks (with an inline password field), connect paired Bluetooth devices or pair a new one, choose the default sound output and input
   - The other tiles' › opens the matching System Settings page
   - **Dark Mode** applies your default light or dark global theme (System Settings → Colors & Themes) if both are set, and otherwise switches the colour scheme, remembering the one you switched away from
   - **KDE Connect** opens a page like the KDE Connect applet: each connected device's battery, ring / browse files / send clipboard, the remote keyboard field and the phone's notifications (dismiss or reply)
   - **Clipboard** opens Klipper's history, with thumbnails for pictures; click an entry to copy it again (needs the tray's Clipboard entry, which can be set to "Always hidden")
+  - **Screenshot** takes a region screenshot with Spectacle (with your Spectacle settings, like the Print key); › offers full screen, active window, screen recording and opening Spectacle
+  - **Hotspot** shares this computer's connection over Wi-Fi; › shows and edits the network name and password (a random password is created if none is set)
   - **Color Picker** picks a colour from the screen and copies its hex code; › shows the picked colours
   - Tiles for hardware you don't have (e.g. Wi-Fi on a desktop) hide themselves
   - Choose which tiles appear and their order in the settings
@@ -27,7 +29,7 @@ It talks to the same Plasma components as the built-in system tray applets (Netw
 - **Now playing card** for the current MPRIS player, with previous / play-pause / next and a progress bar; click it to raise the player
 - **Removable devices card** while a USB stick, SD card, external disk or disc is plugged in: free space, click to open it, eject to safely remove it
 - **Print queue card** while something is printing, with a cancel button per job
-- **Header** with a battery charge ring and time remaining (laptops) or today's date (desktops), plus Edit tiles, System Settings and Power (lock, sleep, hibernate, restart, shut down, switch user, log out)
+- **Header** with a battery ring with the charge, whether it's plugged in and charging, and the time left (laptops only; desktops just show the buttons), plus System Settings and Power (lock, sleep, hibernate, restart, shut down, switch user, log out)
 - **Keyboard:** Ctrl+Tab to switch tabs, Esc to go back from a page or close
 - **Panel indicators:** network, volume and battery icons, plus a bell while there are unread notifications (crossed out during Do Not Disturb); scroll on them to change the volume
 - Uses your **colour scheme's accent colour**, like Laetum Launcher
@@ -78,7 +80,7 @@ plasmoidviewer -a local.laetum.controlcenter -l bottomedge -f horizontal
 
 ## Settings
 
-Right-click the icon → **Configure Laetum Control Center…** (or the pencil button in the popup's header).
+Right-click the icon → **Configure Laetum Control Center…**.
 
 | Setting | What it does |
 | --- | --- |

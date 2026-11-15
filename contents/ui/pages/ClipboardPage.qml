@@ -86,7 +86,7 @@ ColumnLayout {
                         Kirigami.Icon {
                             Layout.preferredWidth: Kirigami.Units.iconSizes.smallMedium
                             Layout.preferredHeight: Kirigami.Units.iconSizes.smallMedium
-                            Layout.alignment: Qt.AlignTop
+                            Layout.alignment: Qt.AlignVCenter
                             visible: !entry.isImage
                             source: (entry.model.starred ?? false) ? "starred-symbolic" : "edit-paste-symbolic"
                         }
@@ -124,7 +124,7 @@ ColumnLayout {
                         }
 
                         PC3.ToolButton {
-                            Layout.alignment: Qt.AlignTop
+                            Layout.alignment: Qt.AlignVCenter
                             icon.name: "edit-delete-remove-symbolic"
                             icon.width: Kirigami.Units.iconSizes.small
                             icon.height: Kirigami.Units.iconSizes.small
