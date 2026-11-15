@@ -7,7 +7,7 @@ A quick-settings popup for KDE Plasma 6, designed as a companion to [Laetum Laun
 
 It talks to the same Plasma components as the built-in system tray applets (Networks, Bluetooth, Audio Volume, Brightness and Color, Power and Battery, Notifications, Media Player), so toggling something here is the same as toggling it there.
 
-> **Status: 0.3.1, early version.** Controls and Notifications tabs, the Wi-Fi, Bluetooth, Sound, KDE Connect, Clipboard and Color Picker pages, and the removable devices and print queue cards are in. An in-popup edit mode is next (see [Roadmap](#roadmap)).
+> **Status: 0.3.2, early version.** Controls and Notifications tabs, the Wi-Fi, Bluetooth, Sound, KDE Connect, Clipboard, Color Picker and Hotspot pages, and the removable devices and print queue cards are in. See the [Roadmap](#roadmap) for what's next.
 
 ## Features
 
@@ -59,7 +59,7 @@ Each tile and row loads on its own, so a missing component only hides that part:
 Download `laetum-control-center-<version>.plasmoid` from the [Releases](../../releases) page, then:
 
 ```bash
-kpackagetool6 -t Plasma/Applet -i laetum-control-center-0.3.1.plasmoid
+kpackagetool6 -t Plasma/Applet -i laetum-control-center-0.3.2.plasmoid
 ```
 
 Or from a checkout of this repository:
@@ -104,7 +104,6 @@ This widget uses some of Plasma's **private** QML modules (the same ones the tra
 
 ## Roadmap
 
-- **Edit mode** in the popup: remove, add and drag tiles
 - Notifications: group by app, job progress (file copies), screenshot thumbnails
 - KDE Connect: phone battery on the tile, sharing a file
 - Slide animation when opening and closing pages
