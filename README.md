@@ -9,18 +9,18 @@ A quick-settings popup for KDE Plasma 6, designed as a companion to [Laetum Laun
 It talks to the same Plasma components as the built-in system tray applets (Networks, Bluetooth, Audio Volume, Brightness and Color, Power and Battery, Notifications, Media Player), so toggling something here is the same as toggling it there.
 
 <p align="center">
-  <img src="docs/screenshot.png" alt="Laetum Control Center open on a Plasma 6 panel, on a desktop computer" width="45%">
+  <img src="docs/screenshot.png" alt="Laetum Control Center open on a Plasma 6 panel, on a desktop computer, with CPU usage in the header" width="45%">
   &nbsp;
   <img src="docs/screenshot-all-tiles.png" alt="Laetum Control Center with all tiles and the battery header of a laptop" width="45%">
 </p>
-<p align="center"><sub>Left: a desktop with a selection of tiles. Right: all tiles, with the battery in the header and the panel, as on a laptop.</sub></p>
+<p align="center"><sub>Left: a desktop with a selection of tiles and CPU usage in the header. Right: all tiles, with the battery in the header and the panel, as on a laptop.</sub></p>
 
-> **Status: 0.4.0, early version.** Controls and Notifications tabs, the Wi-Fi, Bluetooth, Sound (with per-app volume), Night Light, VPN, KDE Connect, Clipboard, Color Picker and Hotspot pages, and the removable devices and print queue cards are in. Ideas and requests are welcome as [issues](../../issues).
+> **Status: 0.5.0, early version.** Controls and Notifications tabs, the Wi-Fi, Bluetooth, Sound (with per-app volume), Night Light, VPN, KDE Connect, Clipboard, Color Picker and Hotspot pages, and the removable devices and print queue cards are in. Ideas and requests are welcome as [issues](../../issues).
 
 ## Features
 
 - **Two tabs** with Laetum Launcher's sliding accent indicator: **Controls** and **Notifications** (with an unread badge)
-- **Quick-toggle tiles:** Wi-Fi, Bluetooth, Night Light, Do Not Disturb, Airplane Mode, Power Mode, Microphone, KDE Connect, Keep awake, Dark Mode, Clipboard, Color Picker, Screenshot, Hotspot and VPN
+- **Quick-toggle tiles:** Wi-Fi, Bluetooth, Night Light, Do Not Disturb, Airplane Mode, Power Mode, Microphone, KDE Connect, Keep awake, Dark Mode, Clipboard, Color Picker, Screenshot, Hotspot and VPN, plus two **custom tiles** that run your own commands
   - Click a tile to toggle it; the › button opens more options
   - Wi-Fi, Bluetooth and Microphone (and the volume slider's ›) slide in a page inside the popup (with a short slide animation): pick and connect to Wi-Fi networks (with an inline password field), connect paired Bluetooth devices or pair a new one, choose the default sound output and input and set each app's volume (click an app's icon to mute it)
   - **Night Light** pauses and resumes on click; › has Pause for an hour, Pause until tomorrow morning, the night colour temperature (shown live while you drag) and an on/off switch
@@ -39,7 +39,7 @@ It talks to the same Plasma components as the built-in system tray applets (Netw
 - **Now playing card** for the current MPRIS player, with previous / play-pause / next and a progress bar; click it to raise the player
 - **Removable devices card** while a USB stick, SD card, external disk or disc is plugged in: free space, click to open it, eject to safely remove it
 - **Print queue card** while something is printing, with a cancel button per job
-- **Header** with a battery ring with the charge, whether it's plugged in and charging, and the time left (laptops only; desktops just show the buttons), plus System Settings and Power (lock, sleep, hibernate, restart, shut down, switch user, log out)
+- **Header** with a ring: the battery's charge, whether it's plugged in and charging, and the time left (on laptops), or, if you choose, CPU usage with the RAM in use, or GPU usage with the VRAM in use. Next to it are System Settings and Power (lock, sleep, hibernate, restart, shut down, switch user, log out). The header comes in a default and a thin height
 - **Keyboard:** Ctrl+Tab to switch tabs, Esc to go back from a page or close
 - **Panel indicators:** network, volume and battery icons, plus a bell while there are unread notifications (crossed out during Do Not Disturb); scroll on them to change the volume
 - Uses your **colour scheme's accent colour**, like Laetum Launcher
@@ -57,6 +57,7 @@ Each tile and row loads on its own, so a missing component only hides that part:
 | Volume, Microphone | `plasma-pa` |
 | Brightness, Night Light, Power Mode, Keep awake | `powerdevil` and KWin (Power profiles also need `power-profiles-daemon` or `tuned-ppd`) |
 | Battery | `plasma-workspace` |
+| CPU and GPU usage in the header | `ksystemstats` (also used by Plasma's System Monitor widgets) |
 | Do Not Disturb, Notifications tab, notification bell | Plasma's Notifications applet (the tray's Notifications entry; keep it enabled, see [below](#system-tray-entries-hide-dont-disable)) |
 | Clipboard | Klipper (part of `plasma-workspace`; the tray's Clipboard entry must stay enabled, see [below](#system-tray-entries-hide-dont-disable)) |
 | Color Picker | KWin |
@@ -69,7 +70,7 @@ Each tile and row loads on its own, so a missing component only hides that part:
 Download `laetum-control-center-<version>.plasmoid` from the [Releases](../../releases) page, then:
 
 ```bash
-kpackagetool6 -t Plasma/Applet -i laetum-control-center-0.4.0.plasmoid
+kpackagetool6 -t Plasma/Applet -i laetum-control-center-0.5.0.plasmoid
 ```
 
 Or from a checkout of this repository:
@@ -112,8 +113,22 @@ Right-click the icon → **Configure Laetum Control Center…**.
 | Tiles | Which tiles appear, and their order |
 | Show | Volume and brightness sliders, media player, removable devices, print queue |
 | Tabs | Show or hide the Notifications tab |
-| Header buttons | Small, Medium (default) or Large |
+| Header shows | Battery (on laptops; desktops show nothing there), CPU and RAM usage, GPU and VRAM usage, or nothing |
+| Header height | Default or Thin |
+| Header buttons | Default or Large |
 | Animations | Squeeze tiles when clicked |
+
+### Custom tiles
+
+The **Custom Tiles** page sets up two tiles that run your own shell commands. Add them to the popup under **Tiles** on the General page.
+
+- **ON and OFF command:** the tile is a toggle and runs one or the other when clicked.
+- **Only an ON command:** the tile is a button that runs it on every click.
+- **Status command (optional):** tells the tile whether it is on, so it shows the real state even when something else changed it. Exit code 0 means on. Without one, the tile remembers the state you last set.
+
+For example, a Syncthing toggle: `systemctl --user start syncthing`, `systemctl --user stop syncthing` and `systemctl --user is-active syncthing`. Commands run with `sh`. A command that keeps running (a server or a program) should be started with something that returns, such as `systemctl --user start` or `setsid -f`.
+
+> **Security note:** the commands run as you, with your permissions. Only use commands you understand and trust.
 
 ## Troubleshooting
 
@@ -128,6 +143,10 @@ This widget uses some of Plasma's **private** QML modules (the same ones the tra
 ## Roadmap
 
 Everything from the earlier roadmap is in. Ideas and requests are welcome as [issues](../../issues).
+
+## Credits
+
+- The custom tiles are based on an idea from [Kontrol Center](https://github.com/ItsNotMeBro87/plasma6-kontrol-center) by ItsNotMeBro87, whose custom buttons run an ON and an OFF command.
 
 ## AI Disclosure
 

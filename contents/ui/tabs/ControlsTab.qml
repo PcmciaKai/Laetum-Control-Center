@@ -24,7 +24,9 @@ Item {
         "colorpicker": "ColorPickerTile.qml",
         "screenshot": "ScreenshotTile.qml",
         "hotspot": "HotspotTile.qml",
-        "vpn": "VpnTile.qml"
+        "vpn": "VpnTile.qml",
+        "custom1": "Custom1Tile.qml",
+        "custom2": "Custom2Tile.qml"
     })
 
     // The tab area can be taller than this (when a page needs more room); the content stays

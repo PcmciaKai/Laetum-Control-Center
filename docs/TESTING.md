@@ -24,6 +24,10 @@ plasmoidviewer -a local.laetum.controlcenter -l bottomedge -f horizontal
 ## Header
 
 - [ ] Laptop: percentage inside the ring, plugged in/charging state and time left next to it; desktop: no ring, just the buttons on the right
+- [ ] Header shows CPU: CPU usage in the ring, "RAM x of y" below; GPU: GPU usage, "VRAM x of y" with the card's own total (not the RAM's); switching between them while the popup is open updates right away; Nothing: just the buttons
+- [ ] Header height Thin: about half the height; the ring, both lines of text (also "Plugged in, not charging" with "100%") and the buttons fit, also with Large buttons and on a page (Back, title, status, switch)
+- [ ] Header buttons: Default and Large; a setting saved as the old Small shows as Default
+- [ ] About page: the website links to GitHub, "Report an issue" to the GitHub issues
 - [ ] The sliders button opens System Settings, Power opens the session menu
 
 ## Controls tab
@@ -39,6 +43,7 @@ plasmoidviewer -a local.laetum.controlcenter -l bottomedge -f horizontal
 - [ ] Screenshot: click closes the popup and starts Spectacle's region selection; › menu modes work
 - [ ] Night Light: click pauses and resumes; › page: Pause for an hour / until tomorrow morning show the time on the tile and resume by themselves, Resume now works, the temperature slider shows the colour while dragging and is kept after release, the header switch turns Night Light off and on
 - [ ] VPN: without VPNs the tile says Not set up and › shows Add a VPN…; with one VPN a click connects and disconnects it; with several, › lists them and clicking one toggles it; with a VPN that only carries IPv4 on a network with IPv6, the page shows the IPv6 warning
+- [ ] Custom tiles: without commands they say Not set up and a click opens the settings; with ON and OFF commands a click runs them and the tile shows On / Off; with a status command the tile follows it (also after changing the state outside); with only an ON command the tile is a button
 - [ ] Hotspot: tile starts and stops it; › page shows name and password, switch works, fields are locked while it runs; hidden without a capable Wi-Fi card
 - [ ] Color Picker: clicking closes the popup and shows KWin's picker; the hex code is copied and appears on the tile and in the › page; Esc cancels
 - [ ] Tiles for missing hardware are hidden

@@ -11,7 +11,7 @@ Tile {
     iconName: checked ? "redshift-status-on" : "redshift-status-off"
     label: i18n("Night Light")
     status: {
-        if (!nightLight || !nightLight.enabled) {
+        if (!nightLight || !nightLight.switchedOn) {
             return i18n("Off");
         }
         if (nightLight.inhibited) {
@@ -34,7 +34,7 @@ Tile {
     // Switched off: switch it on. Otherwise pause and resume, like the Brightness and Color
     // applet does; › has the timed pauses and the temperature
     onActivated: {
-        if (!nightLight.enabled) {
+        if (!nightLight.switchedOn) {
             nightLight.setEnabled(true);
         } else {
             nightLight.togglePause();

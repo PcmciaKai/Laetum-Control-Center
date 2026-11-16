@@ -14,7 +14,7 @@ ColumnLayout {
     // ---- Page contract (read by the panel's header) ----
     readonly property string title: i18n("Night Light")
     readonly property string subtitle: {
-        if (!nightLight || !nightLight.enabled) {
+        if (!nightLight || !nightLight.switchedOn) {
             return i18n("Off");
         }
         if (nightLight.inhibited) {
@@ -29,11 +29,11 @@ ColumnLayout {
         return i18nc("Colour temperature", "On · %1 K", nightLight.currentTemperature);
     }
     readonly property bool hasSwitch: true
-    readonly property bool switchChecked: nightLight !== null && nightLight.enabled
+    readonly property bool switchChecked: nightLight !== null && nightLight.switchedOn
     readonly property bool switchEnabled: nightLight !== null && nightLight.available
     readonly property bool available: nightLight !== null && nightLight.available
     function toggleSwitch() {
-        nightLight.setEnabled(!nightLight.enabled);
+        nightLight.setEnabled(!nightLight.switchedOn);
     }
 
     // "21:30", or "07:42 tomorrow" for a time on another day
@@ -52,7 +52,7 @@ ColumnLayout {
         onTriggered: page.now = Date.now()
     }
 
-    readonly property bool canPause: nightLight !== null && nightLight.enabled && nightLight.togglable
+    readonly property bool canPause: nightLight !== null && nightLight.switchedOn && nightLight.togglable
 
     spacing: Kirigami.Units.largeSpacing
 
@@ -106,7 +106,7 @@ ColumnLayout {
         Layout.fillWidth: true
         Layout.topMargin: Kirigami.Units.smallSpacing
         spacing: Kirigami.Units.smallSpacing
-        enabled: page.nightLight !== null && page.nightLight.enabled
+        enabled: page.nightLight !== null && page.nightLight.switchedOn
 
         RowLayout {
             Layout.fillWidth: true

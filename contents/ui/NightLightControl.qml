@@ -12,12 +12,13 @@ Item {
 
     // ---- State, from KWin ----
     readonly property bool available: Boolean(nightLight.properties.available)
-    readonly property bool enabled: Boolean(nightLight.properties.enabled)
+    // Switched on in the settings. Not called "enabled": that would shadow Item.enabled
+    readonly property bool switchedOn: Boolean(nightLight.properties.enabled)
     readonly property bool inhibited: Boolean(nightLight.properties.inhibited)
     // Paused by us (or the Brightness and Color applet), rather than by another app
     readonly property bool pausedHere: NightLightInhibitor.inhibited
     readonly property bool togglable: !inhibited || pausedHere
-    readonly property bool active: enabled && !inhibited
+    readonly property bool active: switchedOn && !inhibited
     readonly property int mode: Number(nightLight.properties.mode)
     readonly property bool daylight: Boolean(nightLight.properties.daylight)
     readonly property int currentTemperature: Number(nightLight.properties.currentTemperature)

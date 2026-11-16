@@ -30,7 +30,10 @@ KCM.SimpleKCM {
     property string cfg_lightIconTheme
     property string cfg_darkIconTheme
     property alias cfg_showNotificationsTab: notificationsTabCheck.checked
-    property alias cfg_headerIconSize: iconSizeCombo.currentIndex
+    // 1 = Default, 2 = Large; 0 was Small and now counts as Default
+    property int cfg_headerIconSize
+    property alias cfg_headerHeight: headerHeightCombo.currentIndex
+    property alias cfg_headerBadge: headerBadgeCombo.currentIndex
     property alias cfg_animateClick: clickCheck.checked
 
     // Defaults Plasma passes in alongside the values
@@ -53,7 +56,35 @@ KCM.SimpleKCM {
     property string cfg_darkIconThemeDefault
     property bool cfg_showNotificationsTabDefault
     property int cfg_headerIconSizeDefault
+    property int cfg_headerHeightDefault
+    property int cfg_headerBadgeDefault
     property bool cfg_animateClickDefault
+
+    // Custom tiles: edited on the Custom Tiles page (only the page on screen is saved)
+    property var cfg_custom1Name
+    property var cfg_custom1NameDefault
+    property var cfg_custom1Icon
+    property var cfg_custom1IconDefault
+    property var cfg_custom1OnCommand
+    property var cfg_custom1OnCommandDefault
+    property var cfg_custom1OffCommand
+    property var cfg_custom1OffCommandDefault
+    property var cfg_custom1StatusCommand
+    property var cfg_custom1StatusCommandDefault
+    property var cfg_custom1On
+    property var cfg_custom1OnDefault
+    property var cfg_custom2Name
+    property var cfg_custom2NameDefault
+    property var cfg_custom2Icon
+    property var cfg_custom2IconDefault
+    property var cfg_custom2OnCommand
+    property var cfg_custom2OnCommandDefault
+    property var cfg_custom2OffCommand
+    property var cfg_custom2OffCommandDefault
+    property var cfg_custom2StatusCommand
+    property var cfg_custom2StatusCommandDefault
+    property var cfg_custom2On
+    property var cfg_custom2OnDefault
 
     readonly property var allTiles: [
         { id: "wifi", name: i18n("Wi-Fi"), icon: "network-wireless-symbolic" },
@@ -70,7 +101,10 @@ KCM.SimpleKCM {
         { id: "colorpicker", name: i18n("Color Picker"), icon: "color-picker-symbolic" },
         { id: "screenshot", name: i18n("Screenshot"), icon: "camera-photo-symbolic" },
         { id: "hotspot", name: i18n("Hotspot"), icon: "network-wireless-hotspot-symbolic" },
-        { id: "vpn", name: i18n("VPN"), icon: "network-vpn-symbolic" }
+        { id: "vpn", name: i18n("VPN"), icon: "network-vpn-symbolic" },
+        // Named and set up on the Custom Tiles page
+        { id: "custom1", name: page.cfg_custom1Name || i18n("Custom tile 1"), icon: page.cfg_custom1Icon || "system-run-symbolic" },
+        { id: "custom2", name: page.cfg_custom2Name || i18n("Custom tile 2"), icon: page.cfg_custom2Icon || "system-run-symbolic" }
     ]
     readonly property var enabledTiles: Array.from(cfg_tiles).filter(id => allTiles.some(t => t.id === id))
     // Shown tiles first, in their order, then the hidden ones
@@ -201,7 +235,7 @@ KCM.SimpleKCM {
             QQC2.Label {
                 Layout.topMargin: Kirigami.Units.smallSpacing
                 Layout.maximumWidth: Kirigami.Units.gridUnit * 18
-                text: i18n("Tiles for hardware this computer doesn't have (for example Wi-Fi on a desktop) hide themselves.")
+                text: i18n("Tiles for hardware this computer doesn't have (for example Wi-Fi on a desktop) hide themselves. The custom tiles' commands are set on the Custom Tiles page.")
                 font: Kirigami.Theme.smallFont
                 opacity: 0.7
                 wrapMode: Text.WordWrap
@@ -237,9 +271,21 @@ KCM.SimpleKCM {
         }
 
         QQC2.ComboBox {
+            id: headerBadgeCombo
+            Kirigami.FormData.label: i18n("Header shows:")
+            model: [i18n("Battery (on laptops)"), i18n("CPU and RAM usage"), i18n("GPU and VRAM usage"), i18n("Nothing")]
+        }
+        QQC2.ComboBox {
+            id: headerHeightCombo
+            Kirigami.FormData.label: i18n("Header height:")
+            model: [i18nc("Header height", "Default"), i18nc("Header height", "Thin")]
+        }
+        QQC2.ComboBox {
             id: iconSizeCombo
             Kirigami.FormData.label: i18n("Header buttons:")
-            model: [i18n("Small"), i18n("Medium"), i18n("Large")]
+            model: [i18nc("Header button size", "Default"), i18nc("Header button size", "Large")]
+            currentIndex: page.cfg_headerIconSize >= 2 ? 1 : 0
+            onActivated: index => page.cfg_headerIconSize = index + 1
         }
 
         QQC2.CheckBox {

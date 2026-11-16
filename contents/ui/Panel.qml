@@ -20,7 +20,9 @@ FocusScope {
     readonly property int pad: Kirigami.Units.gridUnit
     readonly property color hairline: Qt.alpha(Kirigami.Theme.textColor, 0.12)
     readonly property color headerColor: Kirigami.ColorUtils.tintWithAlpha(Kirigami.Theme.backgroundColor, Kirigami.Theme.textColor, 0.08)
-    readonly property int headerIconSize: Math.round(Kirigami.Units.iconSizes.smallMedium * [1, 1.3, 1.6][Math.max(0, Math.min(2, Plasmoid.configuration.headerIconSize))])
+    // Header buttons: Default or Large (the old Small, 0, shows as Default)
+    readonly property int headerIconSize: Math.round(Kirigami.Units.iconSizes.smallMedium * (Plasmoid.configuration.headerIconSize >= 2 ? 1.6 : 1.3))
+    readonly property bool thinHeader: Plasmoid.configuration.headerHeight === 1
 
     // ---- Tabs ----
     readonly property var tabs: {
@@ -187,8 +189,11 @@ FocusScope {
             id: header
             Layout.fillWidth: true
             // The same height on the home and page headers, so opening a page doesn't move things
-            implicitHeight: Math.max(Kirigami.Units.gridUnit * 2.5, panel.pageOpen ? pageHeader.implicitHeight : homeHeader.implicitHeight)
-                + Math.round(panel.pad * 1.5)
+            readonly property real contentHeight: panel.pageOpen ? pageHeader.implicitHeight : homeHeader.implicitHeight
+            // Thin: about half the default, with just enough room around the buttons
+            implicitHeight: panel.thinHeader
+                ? Math.max(Kirigami.Units.gridUnit * 1.5, contentHeight) + Kirigami.Units.smallSpacing * 2
+                : Math.max(Kirigami.Units.gridUnit * 2.5, contentHeight) + Math.round(panel.pad * 1.5)
 
             Kirigami.ShadowedRectangle {
                 readonly property real cornerRadius: Plasmoid.location === PlasmaCore.Types.TopEdge ? 0 : Kirigami.Units.cornerRadius
@@ -203,7 +208,7 @@ FocusScope {
                 corners.bottomRightRadius: 0
             }
 
-            // Home: battery ring (laptops only), plus System Settings and Power
+            // Home: the ring (battery on laptops, or CPU or GPU usage), plus System Settings and Power
             RowLayout {
                 id: homeHeader
                 anchors.fill: parent
@@ -213,17 +218,18 @@ FocusScope {
                 visible: !panel.pageOpen
 
                 Loader {
-                    id: batteryBadge
+                    id: headerBadge
                     readonly property bool shown: status === Loader.Ready && item.available
                     Layout.fillWidth: true
                     visible: shown
-                    source: "BatteryBadge.qml"
+                    source: ["BatteryBadge.qml", "CpuBadge.qml", "GpuBadge.qml", ""][Math.max(0, Math.min(3, Plasmoid.configuration.headerBadge))]
+                    onLoaded: item.thin = Qt.binding(() => panel.thinHeader)
                 }
 
-                // Without a battery the header only has the buttons, on the right
+                // Without a ring (no battery, or switched off) the header only has the buttons, on the right
                 Item {
                     Layout.fillWidth: true
-                    visible: !batteryBadge.shown
+                    visible: !headerBadge.shown
                 }
 
                 RowLayout {
@@ -231,6 +237,7 @@ FocusScope {
 
                     HeaderButton {
                         iconSize: panel.headerIconSize
+                        thin: panel.thinHeader
                         iconName: "configure-symbolic"
                         tooltip: i18n("System Settings")
                         onClicked: {
@@ -241,6 +248,7 @@ FocusScope {
                     HeaderButton {
                         id: powerButton
                         iconSize: panel.headerIconSize
+                        thin: panel.thinHeader
                         iconName: "system-shutdown-symbolic"
                         tooltip: i18n("Power")
                         onClicked: powerMenu.openRelative()
@@ -259,6 +267,7 @@ FocusScope {
 
                 HeaderButton {
                     iconSize: panel.headerIconSize
+                    thin: panel.thinHeader
                     iconName: Qt.application.layoutDirection === Qt.RightToLeft ? "go-next-symbolic" : "go-previous-symbolic"
                     tooltip: i18n("Back")
                     onClicked: panel.closePage()
@@ -272,7 +281,7 @@ FocusScope {
                         id: pageTitle
                         Layout.fillWidth: true
                         text: panel.pageItem ? panel.pageItem.title : ""
-                        font.pointSize: Kirigami.Theme.defaultFont.pointSize * 1.25
+                        font.pointSize: Kirigami.Theme.defaultFont.pointSize * (panel.thinHeader ? 1 : 1.25)
                         elide: Text.ElideRight
                         textFormat: Text.PlainText
                     }

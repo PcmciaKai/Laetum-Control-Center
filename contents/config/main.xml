@@ -40,8 +40,17 @@
     <entry name="showNotificationsTab" type="Bool">
       <default>true</default>
     </entry>
+    <!-- 1 = Default, 2 = Large (0, the old Small, now shows as Default) -->
     <entry name="headerIconSize" type="Int">
       <default>1</default>
+    </entry>
+    <!-- 0 = Default, 1 = Thin -->
+    <entry name="headerHeight" type="Int">
+      <default>0</default>
+    </entry>
+    <!-- The header's ring: 0 = battery, 1 = CPU and RAM, 2 = GPU and VRAM, 3 = nothing -->
+    <entry name="headerBadge" type="Int">
+      <default>0</default>
     </entry>
     <!-- Remembered between runs -->
     <entry name="colorHistory" type="StringList">
@@ -69,6 +78,46 @@
     </entry>
     <entry name="animateClick" type="Bool">
       <default>true</default>
+    </entry>
+    <!-- Custom tile 1: commands run with sh when the tile is switched on / off -->
+    <entry name="custom1Name" type="String">
+      <default></default>
+    </entry>
+    <entry name="custom1Icon" type="String">
+      <default>system-run-symbolic</default>
+    </entry>
+    <entry name="custom1OnCommand" type="String">
+      <default></default>
+    </entry>
+    <entry name="custom1OffCommand" type="String">
+      <default></default>
+    </entry>
+    <!-- Optional: exit code 0 means on; otherwise the last state set from the tile is kept -->
+    <entry name="custom1StatusCommand" type="String">
+      <default></default>
+    </entry>
+    <entry name="custom1On" type="Bool">
+      <default>false</default>
+    </entry>
+    <!-- Custom tile 2: commands run with sh when the tile is switched on / off -->
+    <entry name="custom2Name" type="String">
+      <default></default>
+    </entry>
+    <entry name="custom2Icon" type="String">
+      <default>system-run-symbolic</default>
+    </entry>
+    <entry name="custom2OnCommand" type="String">
+      <default></default>
+    </entry>
+    <entry name="custom2OffCommand" type="String">
+      <default></default>
+    </entry>
+    <!-- Optional: exit code 0 means on; otherwise the last state set from the tile is kept -->
+    <entry name="custom2StatusCommand" type="String">
+      <default></default>
+    </entry>
+    <entry name="custom2On" type="Bool">
+      <default>false</default>
     </entry>
   </group>
 </kcfg>
