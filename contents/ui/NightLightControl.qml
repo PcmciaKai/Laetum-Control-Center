@@ -123,7 +123,6 @@ Item {
             "path": "/org/kde/KWin/NightLight",
             "iface": "org.kde.KWin.NightLight",
             "member": "preview",
-            "signature": "u",
             "arguments": [new DBus.uint32(Math.round(kelvin))]
         }, () => {}, () => {});
     }

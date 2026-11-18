@@ -34,7 +34,6 @@ Tile {
             "path": "/component/org_kde_spectacle_desktop",
             "iface": "org.kde.kglobalaccel.Component",
             "member": "invokeShortcut",
-            "signature": "s",
             "arguments": [new DBus.string(tile.pendingShortcut)]
         }, () => {}, () => {})
     }

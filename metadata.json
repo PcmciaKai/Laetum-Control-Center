@@ -11,7 +11,7 @@
         "Id": "local.laetum.controlcenter",
         "License": "GPL-3.0-or-later",
         "Name": "Laetum Control Center",
-        "Version": "0.5.0",
+        "Version": "0.5.1",
         "Website": "https://github.com/PcmciaKai/Laetum-Control-Center",
         "BugReportUrl": "https://github.com/PcmciaKai/Laetum-Control-Center/issues"
     },

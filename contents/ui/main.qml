@@ -83,12 +83,13 @@ PlasmoidItem {
             copyHelper.copy();
             return;
         }
+        // No "signature" key in D-Bus calls: Plasma 6.7 then sends the call without its
+        // arguments and it fails. The typed values (DBus.string, DBus.uint32) set the types.
         DBus.SessionBus.asyncCall({
             "service": "org.kde.klipper",
             "path": "/klipper",
             "iface": "org.kde.klipper.klipper",
             "member": "setClipboardContents",
-            "signature": "s",
             "arguments": [new DBus.string(text)]
         });
     }

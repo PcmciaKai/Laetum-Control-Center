@@ -121,7 +121,6 @@ ColumnLayout {
                     "path": "/component/plasmashell",
                     "iface": "org.kde.kglobalaccel.Component",
                     "member": "invokeShortcut",
-                    "signature": "s",
                     "arguments": [new DBus.string("toggle do not disturb")]
                 });
             }
