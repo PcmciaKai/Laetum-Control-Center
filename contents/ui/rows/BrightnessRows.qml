@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import org.kde.plasma.components as PC3
 import org.kde.kirigami as Kirigami
+import org.kde.plasma.plasma5support as P5Support
 import org.kde.plasma.private.brightnesscontrolplugin
 import ".."
 
@@ -10,6 +11,36 @@ ColumnLayout {
     id: rows
 
     readonly property bool available: control.isBrightnessAvailable && repeater.count > 0
+
+    // Papirus has no brightness-high, so Plasma falls back to Papirus's colourful
+    // "brightness" app icon, which is grey-blue. Its panel icon is white like the volume icon.
+    // Kirigami can't tell whether a theme has an icon, so this goes by the theme's name.
+    property string iconTheme
+    readonly property string iconName: /^e?Papirus/.test(iconTheme) ? "xfpm-brightness-lcd" : "brightness-high"
+
+    function readIconTheme() {
+        themeReader.connectSource("kreadconfig6 --group Icons --key Theme --default breeze # " + Date.now());
+    }
+
+    // Again on every open: the Dark Mode tile can switch icon themes
+    Connections {
+        target: root
+        function onExpandedChanged() {
+            if (root.expanded) {
+                rows.readIconTheme();
+            }
+        }
+    }
+    Component.onCompleted: readIconTheme()
+
+    P5Support.DataSource {
+        id: themeReader
+        engine: "executable"
+        onNewData: (source, data) => {
+            rows.iconTheme = (data.stdout || "").trim();
+            disconnectSource(source);
+        }
+    }
 
     spacing: Kirigami.Units.largeSpacing
 
@@ -37,7 +68,7 @@ ColumnLayout {
             spacing: Kirigami.Units.largeSpacing
 
             PC3.ToolButton {
-                icon.name: "brightness-high"
+                icon.name: rows.iconName
                 display: PC3.AbstractButton.IconOnly
                 text: repeater.count > 1 ? i18n("%1: display settings", row.label) : i18n("Display settings")
                 onClicked: root.openKcm("kcm_kscreen")

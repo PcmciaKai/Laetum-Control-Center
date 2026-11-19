@@ -15,7 +15,7 @@ It talks to the same Plasma components as the built-in system tray applets (Netw
 </p>
 <p align="center"><sub>Left: a desktop with a selection of tiles and CPU usage in the header. Right: all tiles, with the battery in the header and the panel, as on a laptop.</sub></p>
 
-> **Status: 0.5.1, early version.** Controls and Notifications tabs, the Wi-Fi, Bluetooth, Sound (with per-app volume), Night Light, VPN, KDE Connect, Clipboard, Color Picker and Hotspot pages, and the removable devices and print queue cards are in. Ideas and requests are welcome as [issues](../../issues).
+> **Status: 0.5.2, early version.** Controls and Notifications tabs, the Wi-Fi, Bluetooth, Sound (with per-app volume), Night Light, VPN, KDE Connect, Clipboard, Color Picker and Hotspot pages, and the removable devices and print queue cards are in. Ideas and requests are welcome as [issues](../../issues).
 
 ## Features
 
@@ -70,7 +70,7 @@ Each tile and row loads on its own, so a missing component only hides that part:
 Download `laetum-control-center-<version>.plasmoid` from the [Releases](../../releases) page, then:
 
 ```bash
-kpackagetool6 -t Plasma/Applet -i laetum-control-center-0.5.1.plasmoid
+kpackagetool6 -t Plasma/Applet -i laetum-control-center-0.5.2.plasmoid
 ```
 
 Or from a checkout of this repository:
